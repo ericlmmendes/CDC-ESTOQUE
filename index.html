@@ -1,0 +1,893 @@
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CDC Estoque – Controle de Estoque</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="shortcut icon" href="./img/CDC-ESTOQUE.png">
+  <script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    body {font-family:'Poppins',sans-serif; display:flex; flex-direction:column; min-height:100vh; margin:0;}
+    .custom-shadow{box-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -2px rgba(0,0,0,.05);}
+    .scanner-container {position:relative; width:100%; height:240px; object-fit:cover; overflow:hidden;}
+    .scanner-line {position:absolute; left:0; top:0; width:100%; height:3px; background:yellow; box-shadow:0 0 10px yellow; animation:scan 2.5s linear infinite;}
+    @keyframes scan {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(237px); }
+      100% { transform: translateY(0); }
+    }
+    #scanner video, #scanner canvas {width:100%; height:100%; object-fit:cover;}
+    .hidden{display:none;}
+    .nav-active{background:#fff !important; color:#1d4ed8 !important;}
+    main{flex:1;}
+    footer{margin-top:auto; width:100%;}
+    .login-container {min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(to bottom right, #f8fafc, #e2e8f0);}
+    .qr-printable { page-break-inside: avoid; margin: 10px; text-align: center; display: inline-block; vertical-align: top; }
+    .product-highlight {
+        transition: outline 0.2s ease-in-out;
+        outline: 3px solid #facc15; /* Tailwind yellow-400 */
+    }
+    @media print {
+      body * { visibility: hidden; }
+      #qrCodeList, #qrCodeList * { visibility: visible; }
+      #qrCodeList { position: absolute; left: 0; top: 0; width: 100%; }
+      .nav-btn, header, footer, button, h2 { display: none !important; }
+      .qr-printable { width: 48%; }
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen flex flex-col">
+
+<!-- TELA DE LOGIN -->
+<div id="loginScreen" class="login-container w-full">
+  <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
+    <div class="flex justify-center mb-6">
+      <img src="./img/CDC-ESTOQUE.png" alt="Logo" class="w-25 h-25 rounded-lg">
+    </div>
+    <h2 class="text-2xl font-bold text-center mb-6 text-gray-800">Login</h2>
+    <form id="loginForm" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Usuário</label>
+        <input type="text" id="loginUser" class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="Nome do Usuario" required>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+        <input type="password" id="loginPass" class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="Senha do usuario" required>
+      </div>
+      <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg">Entrar</button>
+    </form>
+  </div>
+</div>
+
+<!-- CONTEÚDO PRINCIPAL -->
+<div id="mainApp" class="flex-1 max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 w-full hidden">
+  <div class="bg-white rounded-2xl custom-shadow overflow-hidden">
+
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6">
+      <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="flex items-center gap-3">
+          <img src="./img/CDC-ESTOQUE.png" alt="Logo" class="w-20 h-20 rounded-lg">
+          <h1 class="text-2xl font-bold">CDC Estoque</h1>
+        </div>
+        <div class="flex items-center gap-4">
+          <nav class="flex gap-2 flex-wrap">
+            <button data-page="dashboard" class="nav-btn px-4 py-2 bg-white text-blue-700 rounded-lg font-semibold text-sm">Dashboard</button>
+            <button data-page="produtos" class="nav-btn px-4 py-2 hover:bg-white/20 rounded-lg font-medium text-sm">Produtos</button>
+            <button data-page="movimentacoes" class="nav-btn px-4 py-2 hover:bg-white/20 rounded-lg font-medium text-sm">Entradas/Saídas</button>
+            <button data-page="relatorios" class="nav-btn px-4 py-2 hover:bg-white/20 rounded-lg font-medium text-sm">Relatórios</button>
+            <button data-page="qrcodes" class="nav-btn px-4 py-2 hover:bg-white/20 rounded-lg font-medium text-sm">QR Codes</button>
+          </nav>
+          <button id="logoutBtn" class="text-sm text-white hover:underline">Sair</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main -->
+    <main class="p-6">
+
+      <!-- Dashboard -->
+      <section id="dashboard" class="page-section">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6">Dashboard</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="bg-white p-6 rounded-xl border">
+            <h3 class="text-lg font-semibold mb-4">Entradas x Saídas (Mensal)</h3>
+            <canvas id="chartMov"></canvas>
+          </div>
+          <div class="bg-white p-6 rounded-xl border">
+            <h3 class="text-lg font-semibold mb-4">Produtos com Baixo Estoque</h3>
+            <div id="lowStockList" class="space-y-2"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Produtos -->
+      <section id="produtos" class="page-section hidden">
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+          <h2 class="text-2xl font-bold">Lista de Produtos</h2>
+          <div class="flex gap-3 flex-wrap">
+            <button id="openAddModal" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2 text-sm">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"/></svg>
+              Novo Produto
+            </button>
+            <button id="openSaidaModal" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2 text-sm">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" clip-rule="evenodd" /></svg>
+              Saída de Produto
+            </button>
+            <button id="openScanner" class="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2 text-sm">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/></svg>
+              Escanear
+            </button>
+          </div>
+        </div>
+        <div class="mb-6">
+          <label for="productSearchInput" class="sr-only">Pesquisar Produtos</label>
+          <input type="search" id="productSearchInput" placeholder="Pesquisar por nome..." class="w-full max-w-lg border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500">
+        </div>
+        <div id="productListFull" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      </section>
+
+      <!-- Movimentações -->
+      <section id="movimentacoes" class="page-section hidden">
+        <h2 class="text-2xl font-bold mb-4">Entradas / Saídas</h2>
+        <div class="mb-4">
+            <label for="movimentacaoSearchInput" class="sr-only">Pesquisar por nome do produto</label>
+            <input type="search" id="movimentacaoSearchInput" placeholder="Pesquisar por nome do produto..." class="w-full max-w-lg border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500">
+        </div>
+        <div class="flex flex-wrap gap-3 mb-6">
+          <select id="filterTipo" class="border rounded-lg px-3 py-2 text-sm">
+            <option value="">Todas</option>
+            <option value="entrada">Entradas</option>
+            <option value="saida">Saídas</option>
+          </select>
+          <input type="date" id="filterDataInicio" class="border rounded-lg px-3 py-2 text-sm">
+          <input type="date" id="filterDataFim" class="border rounded-lg px-3 py-2 text-sm">
+          <button id="applyFilter" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm">Filtrar</button>
+          <button id="clearFilter" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm">Limpar</button>
+        </div>
+        <div id="movimentacoesList" class="space-y-3"></div>
+      </section>
+
+      <!-- Relatórios -->
+      <section id="relatorios" class="page-section hidden">
+        <h2 class="text-2xl font-bold mb-6">Relatórios</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <button id="gerarMovPDF" class="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-xl font-semibold text-lg hover:shadow-lg transition">
+            Relatório de Movimentações
+          </button>
+          <button id="gerarEstoquePDF" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6 rounded-xl font-semibold text-lg hover:shadow-lg transition">
+            Relatório de Estoque Atual
+          </button>
+        </div>
+      </section>
+
+      <!-- QR Codes -->
+      <section id="qrcodes" class="page-section hidden">
+        <h2 class="text-2xl font-bold mb-6">Gerar QR Codes</h2>
+        <button id="generateQRCodes" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-3 rounded-lg mb-6">
+          Imprimir QR Codes
+        </button>
+        <div id="qrCodeList" class="grid grid-cols-2 gap-6"></div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- RODAPÉ -->
+<footer class="text-center text-xs text-gray-500 py-4 px-6 bg-white border-t w-full">
+  <p>© 2025 Sistema de Controle de Estoque CDC. Todos os direitos reservados.</p>
+  <p>Desenvolvido por <a href="mailto:ericlm.evo@gmail.com" class="text-blue-600 hover:underline">ERICLM.EVO</a></p>
+</footer>
+
+<!-- Modal Cadastro -->
+<div id="addModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 p-4">
+  <div class="bg-white rounded-xl p-6 w-full max-w-lg max-h-screen overflow-y-auto">
+    <h3 class="text-xl font-bold mb-4">Cadastrar Novo Produto</h3>
+    <form id="productForm">
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Nome</label>
+        <input type="text" id="nome" required class="w-full border border-gray-300 rounded-lg px-3 py-2">
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">COD</label>
+        <input type="text" id="cod" readonly class="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-100">
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Quantidade Inicial</label>
+        <input type="number" id="quantidade" value="0" required class="w-full border border-gray-300 rounded-lg px-3 py-2">
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Foto</label>
+        <div class="flex flex-col items-center">
+          <video id="camera" class="w-full h-48 bg-gray-100 rounded-lg object-cover hidden" autoplay playsinline></video>
+          <canvas id="canvas" class="hidden"></canvas>
+          <img id="photoPreview" class="w-full h-48 object-cover rounded-lg hidden">
+          <div class="flex gap-2 mt-2">
+            <button type="button" id="startCamera" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm">Ativar Câmera</button>
+            <button type="button" id="takePhoto" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm hidden">Tirar Foto</button>
+          </div>
+        </div>
+      </div>
+      <div class="flex justify-end gap-3 mt-6">
+        <button type="button" id="closeModal" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700">Cancelar</button>
+        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal Edição -->
+<div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 p-4">
+  <div class="bg-white rounded-xl p-6 w-full max-w-lg max-h-screen overflow-y-auto">
+    <h3 class="text-xl font-bold mb-4">Editar Produto</h3>
+    <form id="editProductForm">
+      <input type="hidden" id="editId">
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Nome</label>
+        <input type="text" id="editNome" required class="w-full border border-gray-300 rounded-lg px-3 py-2">
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">COD</label>
+        <input type="text" id="editCod" readonly class="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-100">
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Quantidade</label>
+        <input type="number" id="editQuantidade" required class="w-full border border-gray-300 rounded-lg px-3 py-2">
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Foto</label>
+        <div class="flex flex-col items-center">
+          <video id="editCamera" class="w-full h-48 bg-gray-100 rounded-lg object-cover hidden" autoplay playsinline></video>
+          <canvas id="editCanvas" class="hidden"></canvas>
+          <img id="editPhotoPreview" class="w-full h-48 object-cover rounded-lg">
+          <div class="flex gap-2 mt-2">
+            <button type="button" id="editStartCamera" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm">Ativar Câmera</button>
+            <button type="button" id="editTakePhoto" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm hidden">Tirar Foto</button>
+          </div>
+        </div>
+      </div>
+      <div class="flex justify-between gap-3 mt-6">
+        <button type="button" id="deleteProduct" class="px-4 py-2 bg-red-600 text-white rounded-lg hidden">Excluir</button>
+        <div class="flex gap-3">
+          <button type="button" id="closeEditModal" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700">Cancelar</button>
+          <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg">Salvar</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal Saída de Produto -->
+<div id="saidaModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 p-4">
+  <div class="bg-white rounded-xl p-6 w-full max-w-lg">
+    <h3 class="text-xl font-bold mb-4">Registrar Saída de Produto</h3>
+    <form id="saidaForm">
+      <div class="mb-4">
+        <label for="saidaProdutoSelect" class="block text-sm font-medium text-gray-700 mb-1">Produto</label>
+        <select id="saidaProdutoSelect" required class="w-full border border-gray-300 rounded-lg px-3 py-2">
+          <option value="">Selecione um produto...</option>
+        </select>
+      </div>
+      <div class="mb-4">
+        <label for="saidaQuantidade" class="block text-sm font-medium text-gray-700 mb-1">Quantidade</label>
+        <input type="number" id="saidaQuantidade" min="1" required class="w-full border border-gray-300 rounded-lg px-3 py-2">
+      </div>
+      <div class="mb-4">
+        <label for="saidaSetor" class="block text-sm font-medium text-gray-700 mb-1">Setor de Destino</label>
+        <input type="text" id="saidaSetor" required class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="Ex: Produção, Administrativo">
+      </div>
+      <div class="flex justify-end gap-3 mt-6">
+        <button type="button" id="closeSaidaModal" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700">Cancelar</button>
+        <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg">Confirmar Saída</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal Scanner -->
+<div id="scannerModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 p-4">
+  <div class="bg-white rounded-xl p-6 w-full max-w-md">
+    <h3 class="text-xl font-bold mb-4">Escanear QR/Barcode</h3>
+    <div id="scanner" class="scanner-container mb-4 bg-gray-200 border-2 border-dashed rounded-lg">
+      <div class="scanner-line"></div>
+    </div>
+    <p id="scanResult" class="text-sm text-gray-600 text-center mb-4">Aguardando leitura…</p>
+    <div class="flex justify-center gap-3">
+      <button id="closeScanner" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700">Fechar</button>
+      <button id="confirmEntry" class="px-4 py-2 bg-green-600 text-white rounded-lg hidden">Entrada</button>
+      <button id="confirmExit" class="px-4 py-2 bg-red-600 text-white rounded-lg hidden">Saída</button>
+      <button id="locateProductBtn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hidden">Localizar</button>
+    </div>
+  </div>
+</div>
+
+<!-- IMPORTA CONFIGURAÇÃO DE ACESSO -->
+<script type="module" src="./info.js"></script>
+
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js';
+  import { getDatabase, ref, push, update, remove, onValue, get, query, orderByChild, startAt, endAt } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-database.js';
+  import ACCESS_CONFIG from './info.js';
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCRiN9bG96FJdOslh_nx3Apmwb8VqdXrsU",
+    authDomain: "evocortes-dfa04.firebaseapp.com",
+    databaseURL: "https://evocortes-dfa04-default-rtdb.firebaseio.com",
+    projectId: "evocortes-dfa04",
+    storageBucket: "evocortes-dfa04.firebasestorage.app",
+    messagingSenderId: "431410895933",
+    appId: "1:431410895933:web:cbe3d898e471e183bf5e54"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const produtosRef = ref(db, 'produtos');
+  const movRef = ref(db, 'movimentacoes');
+
+  // =============== LOGIN & SESSÃO ===============
+  const loginScreen = document.getElementById('loginScreen');
+  const mainApp = document.getElementById('mainApp');
+  let currentUser = null;
+
+  document.getElementById('loginForm').onsubmit = e => {
+    e.preventDefault();
+    const user = document.getElementById('loginUser').value.trim();
+    const pass = document.getElementById('loginPass').value;
+    const validUser = ACCESS_CONFIG.users.find(u => u.username === user && u.password === pass);
+    if (validUser) {
+      const session = { username: validUser.username, role: validUser.role, expires: Date.now() + ACCESS_CONFIG.sessionTimeout };
+      localStorage.setItem('cdcSession', JSON.stringify(session));
+      currentUser = session;
+      loginScreen.classList.add('hidden');
+      mainApp.classList.remove('hidden');
+      loadAllData();
+    } else {
+      alert(ACCESS_CONFIG.loginErrorMessage);
+    }
+  };
+
+  document.getElementById('logoutBtn').onclick = () => {
+    localStorage.removeItem('cdcSession');
+    location.reload();
+  };
+
+  window.addEventListener('load', () => {
+    const session = JSON.parse(localStorage.getItem('cdcSession'));
+    if (session && session.expires > Date.now()) {
+      currentUser = session;
+      loginScreen.classList.add('hidden');
+      mainApp.classList.remove('hidden');
+      loadAllData();
+    }
+  });
+
+  // =============== UI NAVEGAÇÃO E DADOS GLOBAIS ===============
+  const pages = document.querySelectorAll('.page-section');
+  const navBtns = document.querySelectorAll('.nav-btn');
+  const productListFull = document.getElementById('productListFull');
+  const movList = document.getElementById('movimentacoesList');
+  const lowStockList = document.getElementById('lowStockList');
+  const qrCodeList = document.getElementById('qrCodeList');
+  let allProducts = {};
+  let allMovements = [];
+  let movementsLoaded = false;
+
+  navBtns.forEach(b => b.addEventListener('click', () => {
+    pages.forEach(s => s.classList.add('hidden'));
+    document.getElementById(b.dataset.page).classList.remove('hidden');
+    navBtns.forEach(nb => nb.classList.remove('nav-active'));
+    b.classList.add('nav-active');
+    if (b.dataset.page === 'dashboard') loadDashboard();
+    if (b.dataset.page === 'movimentacoes' && !movementsLoaded) loadMovements();
+    if (b.dataset.page === 'qrcodes') loadQRCodes();
+  }));
+
+  // =============== PESQUISA DE PRODUTOS ===============
+  const productSearchInput = document.getElementById('productSearchInput');
+  productSearchInput.addEventListener('input', () => {
+      const searchTerm = productSearchInput.value.toLowerCase().trim();
+      const filteredProducts = Object.fromEntries(
+          Object.entries(allProducts).filter(([id, product]) =>
+              product.nome.toLowerCase().includes(searchTerm)
+          )
+      );
+      renderProdutos(productListFull, filteredProducts);
+  });
+
+  // =============== GERAÇÃO DE COD AUTOMÁTICO ===============
+  async function generateUniqueCOD() {
+    const chars = '0123456789';
+    let cod = '';
+    for (let i = 0; i < 20; i++) {
+      cod += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    const snap = await get(query(produtosRef, orderByChild('cod'), startAt(cod), endAt(cod)));
+    return snap.exists() ? generateUniqueCOD() : cod;
+  }
+
+  // =============== CADASTRO DE PRODUTO ===============
+  const addModal = document.getElementById('addModal');
+  const openAdd = document.getElementById('openAddModal');
+  const closeAdd = document.getElementById('closeModal');
+  const form = document.getElementById('productForm');
+  const video = document.getElementById('camera');
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const preview = document.getElementById('photoPreview');
+  const startBtn = document.getElementById('startCamera');
+  const takeBtn = document.getElementById('takePhoto');
+  let stream = null;
+  let captured = null;
+
+  openAdd.onclick = async () => {
+    if (currentUser.role === 'admin' || currentUser.role === 'operador') {
+      addModal.classList.remove('hidden');
+      document.getElementById('cod').value = await generateUniqueCOD();
+      startCamera.click();
+    } else {
+      alert('Acesso negado: Apenas administradores e operadores podem cadastrar produtos.');
+    }
+  };
+  closeAdd.onclick = () => { addModal.classList.add('hidden'); stopCamera(); resetCam(); };
+
+  startBtn.onclick = async () => {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      video.srcObject = stream;
+      video.play();
+      video.classList.remove('hidden');
+      startBtn.classList.add('hidden');
+      takeBtn.classList.remove('hidden');
+    } catch (e) { alert('Erro ao acessar câmera: ' + e.message); }
+  };
+
+  takeBtn.onclick = () => {
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.drawImage(video, 0, 0);
+    captured = canvas.toDataURL('image/jpeg');
+    preview.src = captured;
+    preview.classList.remove('hidden');
+    video.classList.add('hidden');
+    takeBtn.classList.add('hidden');
+    stopCamera();
+  };
+
+  function stopCamera() { if (stream) stream.getTracks().forEach(t => t.stop()); }
+  function resetCam() {
+    video.classList.add('hidden');
+    preview.classList.add('hidden');
+    startBtn.classList.remove('hidden');
+    takeBtn.classList.add('hidden');
+    captured = null;
+  }
+
+  form.onsubmit = async e => {
+    e.preventDefault();
+    const nome = document.getElementById('nome').value.trim();
+    const cod = document.getElementById('cod').value.trim();
+    const qtd = +document.getElementById('quantidade').value;
+
+    if (!nome || !cod) return alert('Preencha nome e COD');
+    if (qtd < 0) return alert('A quantidade inicial não pode ser negativa.');
+
+    try {
+      const snap = await get(query(produtosRef, orderByChild('cod'), startAt(cod), endAt(cod)));
+      if (snap.exists()) { return alert('COD já cadastrado!'); }
+
+      await push(produtosRef, { nome, cod, quantidade: qtd, imagem: captured || 'https://via.placeholder.com/150', dataCadastro: new Date().toISOString() });
+
+      if (qtd > 0) {
+        await push(movRef, { cod, nome, tipo: 'entrada', quantidade: qtd, data: new Date().toISOString(), responsavel: currentUser.username, setor: 'Cadastro Inicial' });
+      }
+      alert('Produto salvo com sucesso!');
+      addModal.classList.add('hidden');
+      form.reset();
+      resetCam();
+    } catch (error) {
+      console.error("Erro ao salvar produto:", error);
+      alert("Ocorreu um erro ao salvar o produto. Tente novamente.");
+    }
+  };
+
+  // =============== EDIÇÃO DE PRODUTO ===============
+  const editModal = document.getElementById('editModal');
+  const closeEdit = document.getElementById('closeEditModal');
+  const editForm = document.getElementById('editProductForm');
+  const editVideo = document.getElementById('editCamera');
+  const editCanvas = document.getElementById('editCanvas');
+  const editCtx = editCanvas.getContext('2d');
+  const editPreview = document.getElementById('editPhotoPreview');
+  const editStartBtn = document.getElementById('editStartCamera');
+  const editTakeBtn = document.getElementById('editTakePhoto');
+  const deleteBtn = document.getElementById('deleteProduct');
+  let editStream = null;
+  let editCaptured = null;
+
+  closeEdit.onclick = () => { editModal.classList.add('hidden'); stopEditCamera(); resetEditCam(); };
+
+  editStartBtn.onclick = async () => {
+    try {
+      editStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      editVideo.srcObject = editStream;
+      editVideo.play();
+      editVideo.classList.remove('hidden'); editStartBtn.classList.add('hidden'); editTakeBtn.classList.remove('hidden');
+    } catch (e) { alert('Erro ao acessar câmera: ' + e.message); }
+  };
+
+  editTakeBtn.onclick = () => {
+    editCanvas.width = editVideo.videoWidth; editCanvas.height = editVideo.videoHeight;
+    editCtx.drawImage(editVideo, 0, 0);
+    editCaptured = editCanvas.toDataURL('image/jpeg');
+    editPreview.src = editCaptured;
+    editPreview.classList.remove('hidden'); editVideo.classList.add('hidden'); editTakeBtn.classList.add('hidden');
+    stopEditCamera();
+  };
+
+  function stopEditCamera() { if (editStream) editStream.getTracks().forEach(t => t.stop()); }
+  function resetEditCam() {
+    editVideo.classList.add('hidden');
+    editStartBtn.classList.remove('hidden'); editTakeBtn.classList.add('hidden');
+    editCaptured = null;
+  }
+
+  editForm.onsubmit = e => {
+    e.preventDefault();
+    const id = document.getElementById('editId').value;
+    const nome = document.getElementById('editNome').value.trim();
+    const cod = document.getElementById('editCod').value.trim();
+    const qtd = +document.getElementById('editQuantidade').value;
+    if (!nome || !cod) return alert('Preencha nome e COD');
+    update(ref(db, `produtos/${id}`), { nome, cod, quantidade: qtd, imagem: editCaptured || editPreview.src, dataAtualizacao: new Date().toISOString() })
+    .then(() => { alert('Produto atualizado!'); editModal.classList.add('hidden'); resetEditCam(); });
+  };
+
+  deleteBtn.onclick = () => {
+    if (currentUser.role !== 'admin') return alert('Acesso negado: Apenas administradores podem excluir produtos.');
+    if (confirm('Deseja realmente excluir este produto?')) {
+      const id = document.getElementById('editId').value;
+      remove(ref(db, `produtos/${id}`)).then(() => {
+        alert('Produto excluído!');
+        editModal.classList.add('hidden'); resetEditCam();
+      });
+    }
+  };
+
+  // =============== RENDER PRODUTOS ===============
+  function renderProdutos(container, data) {
+    container.innerHTML = '';
+    if (!data || Object.keys(data).length === 0) {
+      container.innerHTML = '<p class="col-span-1 md:col-span-2 lg:col-span-3 text-center text-gray-500">Nenhum produto encontrado.</p>';
+      return;
+    }
+    Object.entries(data).forEach(([id, p]) => {
+      const div = document.createElement('div');
+      div.className = 'bg-white border border-gray-200 rounded-xl p-5 hover:shadow-lg transition';
+      div.id = `product-card-${id}`;
+      div.innerHTML = `
+        <div class="flex justify-between items-start mb-3">
+          <img src="${p.imagem}" alt="${p.nome}" class="w-16 h-16 object-cover rounded-lg">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=60x60&data=${p.cod}" class="w-14 h-14">
+        </div>
+        <h3 class="font-semibold text-gray-800">${p.nome}</h3>
+        <p class="text-xs text-gray-500">COD: ${p.cod}</p>
+        <div class="flex justify-between items-center mt-3">
+          <span class="text-2xl font-bold ${p.quantidade < 10 ? 'text-red-600' : 'text-green-600'}">${p.quantidade}</span>
+          <div class="flex gap-2">
+            <button onclick="editProduct('${id}')" class="bg-blue-100 text-blue-700 p-2 rounded-lg">Editar</button>
+          </div>
+        </div>`;
+      container.appendChild(div);
+    });
+  }
+
+  window.editProduct = (id) => {
+    if (currentUser.role !== 'admin' && currentUser.role !== 'operador') {
+      return alert('Acesso negado: Apenas administradores e operadores podem editar produtos.');
+    }
+    const p = allProducts[id];
+    if (p) {
+      document.getElementById('editId').value = id;
+      document.getElementById('editNome').value = p.nome;
+      document.getElementById('editCod').value = p.cod;
+      document.getElementById('editQuantidade').value = p.quantidade;
+      document.getElementById('editPhotoPreview').src = p.imagem;
+      deleteBtn.classList.toggle('hidden', currentUser.role !== 'admin');
+      editModal.classList.remove('hidden');
+    }
+  };
+
+  // =============== MOVIMENTAÇÕES ===============
+  async function loadMovements() {
+    movList.innerHTML = '<p class="text-gray-500">Carregando movimentações...</p>';
+    try {
+        const snap = await get(movRef);
+        const data = snap.val() || {};
+        allMovements = Object.values(data).sort((a, b) => new Date(b.data) - new Date(a.data));
+        movementsLoaded = true;
+        renderMov(allMovements);
+    } catch (error) {
+        console.error("Erro ao carregar movimentações:", error);
+        movList.innerHTML = '<p class="text-red-500">Ocorreu um erro ao carregar os dados.</p>';
+    }
+  }
+
+  function renderMov(data) {
+    movList.innerHTML = '';
+    if (data.length === 0) {
+        movList.innerHTML = '<p class="text-gray-500">Nenhuma movimentação encontrada para os filtros aplicados.</p>';
+        return;
+    }
+    data.forEach(m => {
+        const div = document.createElement('div');
+        div.className = `p-3 rounded-lg border ${m.tipo === 'entrada' ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`;
+        let setorInfo = (m.setor) ? (m.tipo === 'saida' ? ` | Setor: ${m.setor}` : ` | Origem: ${m.setor}`) : '';
+        div.innerHTML = `
+            <div class="flex justify-between text-sm">
+                <span class="font-medium">${m.nome} (${m.cod})</span>
+                <span class="${m.tipo === 'entrada' ? 'text-green-700' : 'text-red-700'} font-semibold">${m.tipo === 'entrada' ? '+' : '-'}${m.quantidade}</span>
+            </div>
+            <p class="text-xs text-gray-500">${new Date(m.data).toLocaleString()} | Resp: ${m.responsavel}${setorInfo}</p>`;
+        movList.appendChild(div);
+    });
+  }
+
+  function filterAndRenderMovements() {
+      const tipo = document.getElementById('filterTipo').value;
+      const inicio = document.getElementById('filterDataInicio').value;
+      const fim = document.getElementById('filterDataFim').value;
+      const searchTerm = document.getElementById('movimentacaoSearchInput').value.toLowerCase().trim();
+
+      const filtered = allMovements.filter(m => {
+          const movDate = new Date(m.data);
+          const startDate = inicio ? new Date(inicio) : null;
+          if(startDate) startDate.setHours(0, 0, 0, 0);
+          const endDate = fim ? new Date(fim) : null;
+          if (endDate) endDate.setHours(23, 59, 59, 999);
+
+          const tipoMatch = !tipo || m.tipo === tipo;
+          const inicioMatch = !startDate || movDate >= startDate;
+          const fimMatch = !endDate || movDate <= endDate;
+          const searchMatch = !searchTerm || (m.nome && m.nome.toLowerCase().includes(searchTerm)) || (m.cod && m.cod.toLowerCase().includes(searchTerm));
+
+          return tipoMatch && inicioMatch && fimMatch && searchMatch;
+      });
+      renderMov(filtered);
+  }
+
+  document.getElementById('movimentacaoSearchInput').addEventListener('input', filterAndRenderMovements);
+  document.getElementById('applyFilter').onclick = filterAndRenderMovements;
+  document.getElementById('filterTipo').onchange = filterAndRenderMovements;
+  document.getElementById('filterDataInicio').onchange = filterAndRenderMovements;
+  document.getElementById('filterDataFim').onchange = filterAndRenderMovements;
+
+  document.getElementById('clearFilter').onclick = () => {
+      document.getElementById('filterTipo').value = '';
+      document.getElementById('filterDataInicio').value = '';
+      document.getElementById('filterDataFim').value = '';
+      document.getElementById('movimentacaoSearchInput').value = '';
+      renderMov(allMovements);
+  };
+
+  // =============== SAÍDA DE PRODUTO ===============
+  const saidaModal = document.getElementById('saidaModal');
+  const openSaidaBtn = document.getElementById('openSaidaModal');
+  const closeSaidaBtn = document.getElementById('closeSaidaModal');
+  const saidaForm = document.getElementById('saidaForm');
+  const saidaProdutoSelect = document.getElementById('saidaProdutoSelect');
+
+  openSaidaBtn.onclick = () => {
+    if (currentUser.role !== 'admin' && currentUser.role !== 'operador') {
+      return alert('Acesso negado: Apenas administradores e operadores podem registrar saídas.');
+    }
+    saidaForm.reset();
+    saidaProdutoSelect.innerHTML = '<option value="">Selecione um produto...</option>';
+    Object.entries(allProducts).forEach(([id, p]) => {
+      const option = document.createElement('option');
+      option.value = id;
+      option.textContent = `${p.nome} (Estoque: ${p.quantidade})`;
+      option.dataset.quantidade = p.quantidade;
+      option.dataset.nome = p.nome;
+      option.dataset.cod = p.cod;
+      saidaProdutoSelect.appendChild(option);
+    });
+    saidaModal.classList.remove('hidden');
+  };
+
+  closeSaidaBtn.onclick = () => { saidaModal.classList.add('hidden'); saidaForm.reset(); };
+
+  saidaForm.onsubmit = async (e) => {
+    e.preventDefault();
+    const produtoId = saidaProdutoSelect.value;
+    const quantidadeSaida = +document.getElementById('saidaQuantidade').value;
+    const setor = document.getElementById('saidaSetor').value.trim();
+    if (!produtoId || quantidadeSaida <= 0 || !setor) { return alert('Preencha todos os campos corretamente.'); }
+
+    const selectedOption = saidaProdutoSelect.options[saidaProdutoSelect.selectedIndex];
+    const quantidadeAtual = +selectedOption.dataset.quantidade;
+    const produtoNome = selectedOption.dataset.nome;
+    const produtoCod = selectedOption.dataset.cod;
+
+    if (quantidadeSaida > quantidadeAtual) { return alert(`Estoque insuficiente. Estoque atual: ${quantidadeAtual} un.`); }
+
+    const novaQuantidade = quantidadeAtual - quantidadeSaida;
+
+    try {
+      await update(ref(db, `produtos/${produtoId}`), { quantidade: novaQuantidade });
+      await push(movRef, { cod: produtoCod, nome: produtoNome, tipo: 'saida', quantidade: quantidadeSaida, setor, data: new Date().toISOString(), responsavel: currentUser.username });
+      alert('Saída registrada com sucesso!');
+      saidaModal.classList.add('hidden'); saidaForm.reset();
+    } catch (error) {
+      alert('Ocorreu um erro ao registrar a saída.'); console.error("Erro ao registrar saída:", error);
+    }
+  };
+
+  // =============== DASHBOARD ===============
+  let chart;
+  async function loadDashboard() {
+    const snap = await get(movRef);
+    const data = snap.val() || {};
+    const meses = Array(12).fill(0).map(() => ({ entrada: 0, saida: 0 }));
+    Object.values(data).forEach(m => {
+      const mes = new Date(m.data).getMonth();
+      if (m.tipo === 'entrada') meses[mes].entrada += m.quantidade; else meses[mes].saida += m.quantidade;
+    });
+    const ctx = document.getElementById('chartMov').getContext('2d');
+    if (chart) chart.destroy();
+    chart = new Chart(ctx, { type: 'bar', data: { labels: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'], datasets: [ { label: 'Entradas', data: meses.map(m => m.entrada), backgroundColor: '#10b981' }, { label: 'Saídas', data: meses.map(m => m.saida), backgroundColor: '#ef4444' } ] }, options: { responsive: true, scales: { y: { beginAtZero: true } } } });
+    lowStockList.innerHTML = '';
+    Object.values(allProducts).filter(p => p.quantidade < 10).forEach(p => {
+      const div = document.createElement('div');
+      div.className = 'text-sm p-2 bg-red-50 border border-red-200 rounded';
+      div.innerHTML = `<strong>${p.nome}</strong> - ${p.quantidade} un`;
+      lowStockList.appendChild(div);
+    });
+  }
+
+  // =============== RELATÓRIOS PDF ===============
+  document.getElementById('gerarMovPDF').onclick = async () => {
+    const { jsPDF } = window.jspdf; const doc = new jsPDF();
+    doc.setFontSize(16); doc.text('Relatório de Movimentações', 105, 20, { align: 'center' });
+    doc.setFontSize(12); doc.text(`Gerado em: ${new Date().toLocaleString()}`, 20, 30); doc.text(`Responsável: ${currentUser.username}`, 20, 40);
+    let y = 50;
+    const snap = await get(movRef); const data = snap.val() || {};
+    Object.values(data).reverse().slice(0, 50).forEach(m => {
+      if (y > 270) { doc.addPage(); y = 20; }
+      const setorInfo = (m.tipo === 'saida' && m.setor) ? ` | Setor: ${m.setor}` : '';
+      doc.text(`${new Date(m.data).toLocaleString()} | ${m.nome} | ${m.tipo} | ${m.quantidade} | Resp: ${m.responsavel}${setorInfo}`, 20, y);
+      y += 10;
+    });
+    doc.save('relatorio_movimentacoes.pdf');
+  };
+
+  document.getElementById('gerarEstoquePDF').onclick = async () => {
+    const { jsPDF } = window.jspdf; const doc = new jsPDF();
+    doc.setFontSize(16); doc.text('Relatório de Estoque', 105, 20, { align: 'center' });
+    doc.setFontSize(12); doc.text(`Gerado em: ${new Date().toLocaleString()}`, 20, 30); doc.text(`Responsável: ${currentUser.username}`, 20, 40);
+    let y = 50;
+    Object.values(allProducts).forEach(p => {
+      if (y > 270) { doc.addPage(); y = 20; }
+      doc.text(`${p.nome} | COD: ${p.cod} | Estoque: ${p.quantidade}`, 20, y);
+      y += 10;
+    });
+    doc.save('relatorio_estoque.pdf');
+  };
+
+  // =============== QR CODES ===============
+  function loadQRCodes() {
+    qrCodeList.innerHTML = '';
+    Object.values(allProducts).forEach(p => {
+      const div = document.createElement('div');
+      div.className = 'qr-printable';
+      div.innerHTML = `<div id="qrcode-${p.cod}" class="inline-block"></div><p class="text-sm font-medium">${p.nome} (${p.cod})</p>`;
+      qrCodeList.appendChild(div);
+      new QRCode(document.getElementById(`qrcode-${p.cod}`), { text: p.cod, width: 100, height: 100 });
+    });
+  }
+  document.getElementById('generateQRCodes').onclick = () => window.print();
+
+  // =============== SCANNER ===============
+  const scannerModal = document.getElementById('scannerModal');
+  const openScan = document.getElementById('openScanner');
+  const closeScan = document.getElementById('closeScanner');
+  const resultTxt = document.getElementById('scanResult');
+  const btnEntry = document.getElementById('confirmEntry');
+  const btnExit = document.getElementById('confirmExit');
+  const btnLocate = document.getElementById('locateProductBtn');
+  let quaggaRunning = false;
+  let lastCode = null;
+
+  openScan.onclick = () => { scannerModal.classList.remove('hidden'); setTimeout(startQuagga, 200); };
+  closeScan.onclick = () => { scannerModal.classList.add('hidden'); stopQuagga(); };
+
+  function startQuagga() {
+    if (quaggaRunning) return;
+    Quagga.init({ inputStream: { name: "Live", type: "LiveStream", target: document.querySelector('#scanner'), constraints: { facingMode: "environment" } }, decoder: { readers: ["code_128_reader","ean_reader","ean_8_reader","qr_code_reader"] }, locate: true }, err => {
+      if (err) { resultTxt.textContent = 'Erro ao iniciar câmera.'; return; }
+      Quagga.start();
+      quaggaRunning = true;
+    });
+    Quagga.onDetected(data => {
+      lastCode = data.codeResult.code;
+      resultTxt.textContent = `Código: ${lastCode}`;
+      btnEntry.classList.remove('hidden'); btnExit.classList.remove('hidden'); btnLocate.classList.remove('hidden');
+      navigator.vibrate(200);
+      stopQuagga(true);
+    });
+  }
+
+  function stopQuagga(detected = false) {
+    if (quaggaRunning) Quagga.stop();
+    quaggaRunning = false;
+    if (!detected) {
+      document.querySelector('#scanner').innerHTML = '<div class="scanner-line"></div>';
+      btnEntry.classList.add('hidden'); btnExit.classList.add('hidden'); btnLocate.classList.add('hidden');
+      resultTxt.textContent = 'Aguardando leitura…';
+      lastCode = null;
+    }
+  }
+
+  btnEntry.onclick = () => handleScan(true);
+  btnExit.onclick = () => handleScan(false);
+  btnLocate.onclick = () => locateProductByCode();
+
+  async function handleScan(isEntry) {
+    if (currentUser.role !== 'admin' && currentUser.role !== 'operador') { return alert('Acesso negado.'); }
+    const foundEntry = Object.entries(allProducts).find(([id, p]) => p.cod === lastCode);
+    if (foundEntry) {
+      const [id, p] = foundEntry;
+      const nova = p.quantidade + (isEntry ? 1 : -1);
+      if (!isEntry && nova < 0) { alert('Estoque insuficiente'); }
+      else {
+        await update(ref(db, `produtos/${id}`), { quantidade: nova });
+        await push(movRef, { cod: p.cod, nome: p.nome, tipo: isEntry ? 'entrada' : 'saida', quantidade: 1, data: new Date().toISOString(), responsavel: currentUser.username });
+        alert(isEntry ? 'Entrada registrada!' : 'Saída registrada!');
+      }
+    } else { alert('Produto não encontrado'); }
+    scannerModal.classList.add('hidden'); stopQuagga();
+  }
+
+  function locateProductByCode() {
+    const foundEntry = Object.entries(allProducts).find(([id, p]) => p.cod === lastCode);
+    if (foundEntry) {
+      const [id, p] = foundEntry;
+      scannerModal.classList.add('hidden'); stopQuagga();
+      document.querySelector('[data-page="produtos"]').click();
+      productSearchInput.value = p.nome;
+      productSearchInput.dispatchEvent(new Event('input', { bubbles: true }));
+      setTimeout(() => {
+        const card = document.getElementById(`product-card-${id}`);
+        if(card) {
+          card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          card.classList.add('product-highlight');
+          setTimeout(() => card.classList.remove('product-highlight'), 2000);
+        }
+      }, 300);
+    } else { alert('Produto não encontrado'); scannerModal.classList.add('hidden'); stopQuagga(); }
+  }
+
+  // =============== INICIALIZAÇÃO ===============
+  function loadAllData() {
+    onValue(produtosRef, snap => {
+        allProducts = snap.val() || {};
+        const searchTerm = document.getElementById('productSearchInput').value.toLowerCase().trim();
+        const filtered = Object.fromEntries(Object.entries(allProducts).filter(([id, p]) => p.nome.toLowerCase().includes(searchTerm)));
+        renderProdutos(productListFull, searchTerm ? filtered : allProducts);
+        // Refresh dashboard low stock list if it is visible
+        if (!document.getElementById('dashboard').classList.contains('hidden')) {
+            loadDashboard();
+        }
+    });
+    document.querySelector('[data-page="dashboard"]').click();
+  }
+</script>
+</body>
+</html>
