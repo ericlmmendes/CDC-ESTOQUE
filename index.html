@@ -298,11 +298,8 @@
       <div class="scanner-line"></div>
     </div>
     <p id="scanResult" class="text-sm text-gray-600 text-center mb-4" data-translate="scannerAwaiting">Aguardando leitura…</p>
-    <div class="flex justify-center gap-3">
+    <div class="flex justify-center">
       <button id="closeScanner" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700" data-translate="scannerCloseBtn">Fechar</button>
-      <button id="confirmEntry" class="px-4 py-2 bg-green-600 text-white rounded-lg hidden" data-translate="scannerEntryBtn">Entrada</button>
-      <button id="confirmExit" class="px-4 py-2 bg-red-600 text-white rounded-lg hidden" data-translate="scannerExitBtn">Saída</button>
-      <button id="locateProductBtn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hidden" data-translate="scannerLocateBtn">Localizar</button>
     </div>
   </div>
 </div>
@@ -344,7 +341,7 @@
       addModalTitle: "Cadastrar Novo Produto", formName: "Nome", formInitialQty: "Quantidade Inicial", formPhoto: "Foto", formActivateCam: "Ativar Câmera", formTakePhoto: "Tirar Foto", formCancel: "Cancelar", formSave: "Salvar",
       editModalTitle: "Editar Produto", formQuantity: "Quantidade", formDelete: "Excluir",
       exitModalTitle: "Registrar Saída de Produto", exitModalProductLabel: "Produto", exitModalSectorLabel: "Setor de Destino", exitModalSectorPlaceholder: "Ex: Produção, Administrativo", exitModalConfirmBtn: "Confirmar Saída",
-      scannerModalTitle: "Escanear QR/Barcode", scannerAwaiting: "Aguardando leitura…", scannerCloseBtn: "Fechar", scannerEntryBtn: "Entrada", scannerExitBtn: "Saída", scannerLocateBtn: "Localizar",
+      scannerModalTitle: "Escanear QR/Barcode", scannerAwaiting: "Aguardando leitura…", scannerCloseBtn: "Fechar", scannerCodeDetected: "Código Detectado", scannerLocating: "Localizando produto...",
       alertAccessDenied: "Acesso negado: Apenas administradores e operadores podem realizar esta ação.", alertSaveSuccess: "Produto salvo com sucesso!", alertUpdateSuccess: "Produto atualizado!", alertDeleteSuccess: "Produto excluído!", alertExitSuccess: "Saída registrada com sucesso!", alertEntrySuccess: "Entrada registrada com sucesso!", alertProductNotFound: "Produto não encontrado.", alertInsufficientStock: "Estoque insuficiente.", alertFillAllFields: "Preencha todos os campos corretamente.", alertConfirmDelete: "Deseja realmente excluir este produto?",
       renderEditBtn: "Editar", renderNoProducts: "Nenhum produto encontrado.", renderLoadingMovements: "Carregando movimentações...", renderErrorMovements: "Ocorreu um erro ao carregar os dados.", renderNoMovements: "Nenhuma movimentação encontrada para os filtros aplicados.", selectProductPlaceholder: "Selecione um produto...",
     },
@@ -360,7 +357,7 @@
       addModalTitle: "Register New Product", formName: "Name", formInitialQty: "Initial Quantity", formPhoto: "Photo", formActivateCam: "Activate Camera", formTakePhoto: "Take Photo", formCancel: "Cancel", formSave: "Save",
       editModalTitle: "Edit Product", formQuantity: "Quantity", formDelete: "Delete",
       exitModalTitle: "Register Product Exit", exitModalProductLabel: "Product", exitModalSectorLabel: "Destination Sector", exitModalSectorPlaceholder: "E.g.: Production, Administrative", exitModalConfirmBtn: "Confirm Exit",
-      scannerModalTitle: "Scan QR/Barcode", scannerAwaiting: "Awaiting scan…", scannerCloseBtn: "Close", scannerEntryBtn: "Entry", scannerExitBtn: "Exit", scannerLocateBtn: "Locate",
+      scannerModalTitle: "Scan QR/Barcode", scannerAwaiting: "Awaiting scan…", scannerCloseBtn: "Close", scannerCodeDetected: "Code Detected", scannerLocating: "Locating product...",
       alertAccessDenied: "Access denied: Only administrators and operators can perform this action.", alertSaveSuccess: "Product saved successfully!", alertUpdateSuccess: "Product updated!", alertDeleteSuccess: "Product deleted!", alertExitSuccess: "Exit registered successfully!", alertEntrySuccess: "Entry registered successfully!", alertProductNotFound: "Product not found.", alertInsufficientStock: "Insufficient stock.", alertFillAllFields: "Please fill all fields correctly.", alertConfirmDelete: "Do you really want to delete this product?",
       renderEditBtn: "Edit", renderNoProducts: "No products found.", renderLoadingMovements: "Loading movements...", renderErrorMovements: "An error occurred while loading data.", renderNoMovements: "No movements found for the applied filters.", selectProductPlaceholder: "Select a product...",
     },
@@ -376,7 +373,7 @@
       addModalTitle: "注册新产品", formName: "名称", formInitialQty: "初始数量", formPhoto: "照片", formActivateCam: "激活摄像头", formTakePhoto: "拍照", formCancel: "取消", formSave: "保存",
       editModalTitle: "编辑产品", formQuantity: "数量", formDelete: "删除",
       exitModalTitle: "登记产品出库", exitModalProductLabel: "产品", exitModalSectorLabel: "目标部门", exitModalSectorPlaceholder: "例如：生产部、行政部", exitModalConfirmBtn: "确认出库",
-      scannerModalTitle: "扫描二维码/条形码", scannerAwaiting: "等待扫描…", scannerCloseBtn: "关闭", scannerEntryBtn: "入库", scannerExitBtn: "出库", scannerLocateBtn: "定位",
+      scannerModalTitle: "扫描二维码/条形码", scannerAwaiting: "等待扫描…", scannerCloseBtn: "关闭", scannerCodeDetected: "已检测到代码", scannerLocating: "正在定位产品...",
       alertAccessDenied: "访问被拒绝：只有管理员和操作员才能执行此操作。", alertSaveSuccess: "产品保存成功！", alertUpdateSuccess: "产品已更新！", alertDeleteSuccess: "产品已删除！", alertExitSuccess: "出库登记成功！", alertEntrySuccess: "入库登记成功！", alertProductNotFound: "未找到产品。", alertInsufficientStock: "库存不足。", alertFillAllFields: "请正确填写所有字段。", alertConfirmDelete: "您确定要删除此产品吗？",
       renderEditBtn: "编辑", renderNoProducts: "未找到产品。", renderLoadingMovements: "正在加载记录...", renderErrorMovements: "加载数据时发生错误。", renderNoMovements: "未找到符合筛选条件的记录。", selectProductPlaceholder: "选择一个产品...",
     }
@@ -667,7 +664,7 @@
         <h3 class="font-semibold text-gray-800">${p.nome}</h3>
         <p class="text-xs text-gray-500">COD: ${p.cod}</p>
         <div class="flex justify-between items-center mt-3">
-          <span class="text-2xl font-bold ${p.quantidade < 10 ? 'text-red-600' : 'text-green-600'}">${p.quantidade}</span>
+          <span class="text-2xl font-bold ${p.quantidade < 10 ? 'text-red-600' : 'text-green-600'} ">${p.quantidade}</span>
           <div class="flex gap-2">
             <button onclick="editProduct('${id}')" class="bg-blue-100 text-blue-700 p-2 rounded-lg">${getTranslation('renderEditBtn')}</button>
           </div>
@@ -886,11 +883,7 @@
   const openScan = document.getElementById('openScanner');
   const closeScan = document.getElementById('closeScanner');
   const resultTxt = document.getElementById('scanResult');
-  const btnEntry = document.getElementById('confirmEntry');
-  const btnExit = document.getElementById('confirmExit');
-  const btnLocate = document.getElementById('locateProductBtn');
   let quaggaRunning = false;
-  let lastCode = null;
 
   openScan.onclick = () => { scannerModal.classList.remove('hidden'); setTimeout(startQuagga, 200); };
   closeScan.onclick = () => { scannerModal.classList.add('hidden'); stopQuagga(); };
@@ -902,51 +895,31 @@
       Quagga.start();
       quaggaRunning = true;
     });
+
     Quagga.onDetected(data => {
-      lastCode = data.codeResult.code;
-      resultTxt.textContent = `Código: ${lastCode}`;
-      btnEntry.classList.remove('hidden'); btnExit.classList.remove('hidden'); btnLocate.classList.remove('hidden');
+      if (!quaggaRunning) return;
+      const code = data.codeResult.code;
+      stopQuagga();
+      resultTxt.textContent = `${getTranslation('scannerCodeDetected')}: ${code}. ${getTranslation('scannerLocating')}`;
       navigator.vibrate(200);
-      stopQuagga(true);
+      setTimeout(() => locateProductByCode(code), 500);
     });
   }
 
-  function stopQuagga(detected = false) {
-    if (quaggaRunning) Quagga.stop();
-    quaggaRunning = false;
-    if (!detected) {
-      document.querySelector('#scanner').innerHTML = '<div class="scanner-line"></div>';
-      btnEntry.classList.add('hidden'); btnExit.classList.add('hidden'); btnLocate.classList.add('hidden');
-      resultTxt.textContent = getTranslation('scannerAwaiting');
-      lastCode = null;
+  function stopQuagga() {
+    if (quaggaRunning) {
+      Quagga.stop();
     }
+    quaggaRunning = false;
+    document.querySelector('#scanner').innerHTML = '<div class="scanner-line"></div>';
+    resultTxt.textContent = getTranslation('scannerAwaiting');
   }
 
-  btnEntry.onclick = () => handleScan(true);
-  btnExit.onclick = () => handleScan(false);
-  btnLocate.onclick = () => locateProductByCode();
-
-  async function handleScan(isEntry) {
-    if (currentUser.role !== 'admin' && currentUser.role !== 'operador') { return alert(getTranslation('alertAccessDenied')); }
-    const foundEntry = Object.entries(allProducts).find(([id, p]) => p.cod === lastCode);
+  function locateProductByCode(code) {
+    const foundEntry = Object.entries(allProducts).find(([id, p]) => p.cod === code);
     if (foundEntry) {
       const [id, p] = foundEntry;
-      const nova = p.quantidade + (isEntry ? 1 : -1);
-      if (!isEntry && nova < 0) { alert(getTranslation('alertInsufficientStock')); }
-      else {
-        await update(ref(db, `produtos/${id}`), { quantidade: nova });
-        await push(movRef, { cod: p.cod, nome: p.nome, tipo: isEntry ? 'entrada' : 'saida', quantidade: 1, data: new Date().toISOString(), responsavel: currentUser.username });
-        alert(isEntry ? getTranslation('alertEntrySuccess') : getTranslation('alertExitSuccess'));
-      }
-    } else { alert(getTranslation('alertProductNotFound')); }
-    scannerModal.classList.add('hidden'); stopQuagga();
-  }
-
-  function locateProductByCode() {
-    const foundEntry = Object.entries(allProducts).find(([id, p]) => p.cod === lastCode);
-    if (foundEntry) {
-      const [id, p] = foundEntry;
-      scannerModal.classList.add('hidden'); stopQuagga();
+      scannerModal.classList.add('hidden');
       document.querySelector('[data-page="produtos"]').click();
       productSearchInput.value = p.nome;
       productSearchInput.dispatchEvent(new Event('input', { bubbles: true }));
@@ -958,7 +931,10 @@
           setTimeout(() => card.classList.remove('product-highlight'), 2000);
         }
       }, 300);
-    } else { alert(getTranslation('alertProductNotFound')); scannerModal.classList.add('hidden'); stopQuagga(); }
+    } else {
+      alert(getTranslation('alertProductNotFound'));
+      scannerModal.classList.add('hidden');
+    }
   }
 
   // =============== INICIALIZAÇÃO ===============
