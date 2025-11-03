@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -51,17 +50,17 @@
     <div class="flex justify-center mb-6">
       <img src="./img/CDC-ESTOQUE.png" alt="Logo" class="w-25 h-25 rounded-lg">
     </div>
-    <h2 class="text-2xl font-bold text-center mb-6 text-gray-800">Login</h2>
+    <h2 class="text-2xl font-bold text-center mb-6 text-gray-800" data-translate="loginTitle">Login</h2>
     <form id="loginForm" class="space-y-4">
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Usuário</label>
-        <input type="text" id="loginUser" class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="Nome do Usuario" required>
+        <label class="block text-sm font-medium text-gray-700 mb-1" data-translate="loginUserLabel">Usuário</label>
+        <input type="text" id="loginUser" class="w-full border border-gray-300 rounded-lg px-3 py-2" data-translate-placeholder="loginUserPlaceholder" required>
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
-        <input type="password" id="loginPass" class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="Senha do usuario" required>
+        <label class="block text-sm font-medium text-gray-700 mb-1" data-translate="loginPassLabel">Senha</label>
+        <input type="password" id="loginPass" class="w-full border border-gray-300 rounded-lg px-3 py-2" data-translate-placeholder="loginPassPlaceholder" required>
       </div>
-      <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg">Entrar</button>
+      <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg" data-translate="loginEnterBtn">Entrar</button>
     </form>
   </div>
 </div>
@@ -78,14 +77,21 @@
           <h1 class="text-2xl font-bold">CDC Estoque</h1>
         </div>
         <div class="flex items-center gap-4">
+          <div class="relative">
+            <select id="languageSelector" class="bg-white/20 text-white rounded-lg px-3 py-2 text-sm appearance-none cursor-pointer focus:outline-none">
+              <option value="pt" class="text-black">Português</option>
+              <option value="en" class="text-black">English</option>
+              <option value="zh" class="text-black">中文 (简体)</option>
+            </select>
+          </div>
           <nav class="flex gap-2 flex-wrap">
-            <button data-page="dashboard" class="nav-btn px-4 py-2 bg-white text-blue-700 rounded-lg font-semibold text-sm">Dashboard</button>
-            <button data-page="produtos" class="nav-btn px-4 py-2 hover:bg-white/20 rounded-lg font-medium text-sm">Produtos</button>
-            <button data-page="movimentacoes" class="nav-btn px-4 py-2 hover:bg-white/20 rounded-lg font-medium text-sm">Entradas/Saídas</button>
-            <button data-page="relatorios" class="nav-btn px-4 py-2 hover:bg-white/20 rounded-lg font-medium text-sm">Relatórios</button>
-            <button data-page="qrcodes" class="nav-btn px-4 py-2 hover:bg-white/20 rounded-lg font-medium text-sm">QR Codes</button>
+            <button data-page="dashboard" class="nav-btn px-4 py-2 bg-white text-blue-700 rounded-lg font-semibold text-sm" data-translate="navDashboard">Dashboard</button>
+            <button data-page="produtos" class="nav-btn px-4 py-2 hover:bg-white/20 rounded-lg font-medium text-sm" data-translate="navProducts">Produtos</button>
+            <button data-page="movimentacoes" class="nav-btn px-4 py-2 hover:bg-white/20 rounded-lg font-medium text-sm" data-translate="navMovements">Entradas/Saídas</button>
+            <button data-page="relatorios" class="nav-btn px-4 py-2 hover:bg-white/20 rounded-lg font-medium text-sm" data-translate="navReports">Relatórios</button>
+            <button data-page="qrcodes" class="nav-btn px-4 py-2 hover:bg-white/20 rounded-lg font-medium text-sm" data-translate="navQRCodes">QR Codes</button>
           </nav>
-          <button id="logoutBtn" class="text-sm text-white hover:underline">Sair</button>
+          <button id="logoutBtn" class="text-sm text-white hover:underline" data-translate="logoutBtn">Sair</button>
         </div>
       </div>
     </header>
@@ -95,14 +101,14 @@
 
       <!-- Dashboard -->
       <section id="dashboard" class="page-section">
-        <h2 class="text-3xl font-bold text-gray-800 mb-6">Dashboard</h2>
+        <h2 class="text-3xl font-bold text-gray-800 mb-6" data-translate="dashboardTitle">Dashboard</h2>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div class="bg-white p-6 rounded-xl border">
-            <h3 class="text-lg font-semibold mb-4">Entradas x Saídas (Mensal)</h3>
+            <h3 class="text-lg font-semibold mb-4" data-translate="dashboardChartTitle">Entradas x Saídas (Mensal)</h3>
             <canvas id="chartMov"></canvas>
           </div>
           <div class="bg-white p-6 rounded-xl border">
-            <h3 class="text-lg font-semibold mb-4">Produtos com Baixo Estoque</h3>
+            <h3 class="text-lg font-semibold mb-4" data-translate="dashboardLowStockTitle">Produtos com Baixo Estoque</h3>
             <div id="lowStockList" class="space-y-2"></div>
           </div>
         </div>
@@ -111,69 +117,63 @@
       <!-- Produtos -->
       <section id="produtos" class="page-section hidden">
         <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-          <h2 class="text-2xl font-bold">Lista de Produtos</h2>
+          <h2 class="text-2xl font-bold" data-translate="productsTitle">Lista de Produtos</h2>
           <div class="flex gap-3 flex-wrap">
             <button id="openAddModal" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2 text-sm">
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"/></svg>
-              Novo Produto
+              <span data-translate="productsNewBtn">Novo Produto</span>
             </button>
             <button id="openSaidaModal" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2 text-sm">
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" clip-rule="evenodd" /></svg>
-              Saída de Produto
+              <span data-translate="productsExitBtn">Saída de Produto</span>
             </button>
             <button id="openScanner" class="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2 text-sm">
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/></svg>
-              Escanear
+              <span data-translate="productsScanBtn">Escanear</span>
             </button>
           </div>
         </div>
         <div class="mb-6">
-          <label for="productSearchInput" class="sr-only">Pesquisar Produtos</label>
-          <input type="search" id="productSearchInput" placeholder="Pesquisar por nome..." class="w-full max-w-lg border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500">
+          <label for="productSearchInput" class="sr-only" data-translate="productsSearchLabel">Pesquisar Produtos</label>
+          <input type="search" id="productSearchInput" class="w-full max-w-lg border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500" data-translate-placeholder="productsSearchPlaceholder">
         </div>
         <div id="productListFull" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
       </section>
 
       <!-- Movimentações -->
       <section id="movimentacoes" class="page-section hidden">
-        <h2 class="text-2xl font-bold mb-4">Entradas / Saídas</h2>
+        <h2 class="text-2xl font-bold mb-4" data-translate="movementsTitle">Entradas / Saídas</h2>
         <div class="mb-4">
-            <label for="movimentacaoSearchInput" class="sr-only">Pesquisar por nome do produto</label>
-            <input type="search" id="movimentacaoSearchInput" placeholder="Pesquisar por nome do produto..." class="w-full max-w-lg border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500">
+            <label for="movimentacaoSearchInput" class="sr-only" data-translate="movementsSearchLabel">Pesquisar por nome do produto</label>
+            <input type="search" id="movimentacaoSearchInput" class="w-full max-w-lg border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500" data-translate-placeholder="movementsSearchPlaceholder">
         </div>
         <div class="flex flex-wrap gap-3 mb-6">
           <select id="filterTipo" class="border rounded-lg px-3 py-2 text-sm">
-            <option value="">Todas</option>
-            <option value="entrada">Entradas</option>
-            <option value="saida">Saídas</option>
+            <option value="" data-translate="filterAll">Todas</option>
+            <option value="entrada" data-translate="filterEntries">Entradas</option>
+            <option value="saida" data-translate="filterExits">Saídas</option>
           </select>
           <input type="date" id="filterDataInicio" class="border rounded-lg px-3 py-2 text-sm">
           <input type="date" id="filterDataFim" class="border rounded-lg px-3 py-2 text-sm">
-          <button id="applyFilter" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm">Filtrar</button>
-          <button id="clearFilter" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm">Limpar</button>
+          <button id="applyFilter" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm" data-translate="filterApplyBtn">Filtrar</button>
+          <button id="clearFilter" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm" data-translate="filterClearBtn">Limpar</button>
         </div>
         <div id="movimentacoesList" class="space-y-3"></div>
       </section>
 
       <!-- Relatórios -->
       <section id="relatorios" class="page-section hidden">
-        <h2 class="text-2xl font-bold mb-6">Relatórios</h2>
+        <h2 class="text-2xl font-bold mb-6" data-translate="reportsTitle">Relatórios</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <button id="gerarMovPDF" class="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-xl font-semibold text-lg hover:shadow-lg transition">
-            Relatório de Movimentações
-          </button>
-          <button id="gerarEstoquePDF" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6 rounded-xl font-semibold text-lg hover:shadow-lg transition">
-            Relatório de Estoque Atual
-          </button>
+          <button id="gerarMovPDF" class="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-xl font-semibold text-lg hover:shadow-lg transition" data-translate="reportsMovBtn">Relatório de Movimentações</button>
+          <button id="gerarEstoquePDF" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6 rounded-xl font-semibold text-lg hover:shadow-lg transition" data-translate="reportsStockBtn">Relatório de Estoque Atual</button>
         </div>
       </section>
 
       <!-- QR Codes -->
       <section id="qrcodes" class="page-section hidden">
-        <h2 class="text-2xl font-bold mb-6">Gerar QR Codes</h2>
-        <button id="generateQRCodes" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-3 rounded-lg mb-6">
-          Imprimir QR Codes
-        </button>
+        <h2 class="text-2xl font-bold mb-6" data-translate="qrCodesTitle">Gerar QR Codes</h2>
+        <button id="generateQRCodes" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-3 rounded-lg mb-6" data-translate="qrCodesPrintBtn">Imprimir QR Codes</button>
         <div id="qrCodeList" class="grid grid-cols-2 gap-6"></div>
       </section>
 
@@ -183,17 +183,17 @@
 
 <!-- RODAPÉ -->
 <footer class="text-center text-xs text-gray-500 py-4 px-6 bg-white border-t w-full">
-  <p>© 2025 Sistema de Controle de Estoque CDC. Todos os direitos reservados.</p>
-  <p>Desenvolvido por <a href="mailto:ericlm.evo@gmail.com" class="text-blue-600 hover:underline">ERICLM.EVO</a></p>
+  <p data-translate="footerRights">© 2025 Sistema de Controle de Estoque CDC. Todos os direitos reservados.</p>
+  <p><span data-translate="footerDevelopedBy">Desenvolvido por</span> <a href="mailto:ericlm.evo@gmail.com" class="text-blue-600 hover:underline">ERICLM.EVO</a></p>
 </footer>
 
 <!-- Modal Cadastro -->
 <div id="addModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 p-4">
   <div class="bg-white rounded-xl p-6 w-full max-w-lg max-h-screen overflow-y-auto">
-    <h3 class="text-xl font-bold mb-4">Cadastrar Novo Produto</h3>
+    <h3 class="text-xl font-bold mb-4" data-translate="addModalTitle">Cadastrar Novo Produto</h3>
     <form id="productForm">
       <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Nome</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1" data-translate="formName">Nome</label>
         <input type="text" id="nome" required class="w-full border border-gray-300 rounded-lg px-3 py-2">
       </div>
       <div class="mb-4">
@@ -201,24 +201,24 @@
         <input type="text" id="cod" readonly class="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-100">
       </div>
       <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Quantidade Inicial</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1" data-translate="formInitialQty">Quantidade Inicial</label>
         <input type="number" id="quantidade" value="0" required class="w-full border border-gray-300 rounded-lg px-3 py-2">
       </div>
       <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Foto</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1" data-translate="formPhoto">Foto</label>
         <div class="flex flex-col items-center">
           <video id="camera" class="w-full h-48 bg-gray-100 rounded-lg object-cover hidden" autoplay playsinline></video>
           <canvas id="canvas" class="hidden"></canvas>
           <img id="photoPreview" class="w-full h-48 object-cover rounded-lg hidden">
           <div class="flex gap-2 mt-2">
-            <button type="button" id="startCamera" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm">Ativar Câmera</button>
-            <button type="button" id="takePhoto" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm hidden">Tirar Foto</button>
+            <button type="button" id="startCamera" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm" data-translate="formActivateCam">Ativar Câmera</button>
+            <button type="button" id="takePhoto" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm hidden" data-translate="formTakePhoto">Tirar Foto</button>
           </div>
         </div>
       </div>
       <div class="flex justify-end gap-3 mt-6">
-        <button type="button" id="closeModal" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700">Cancelar</button>
-        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg">Salvar</button>
+        <button type="button" id="closeModal" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700" data-translate="formCancel">Cancelar</button>
+        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg" data-translate="formSave">Salvar</button>
       </div>
     </form>
   </div>
@@ -227,11 +227,11 @@
 <!-- Modal Edição -->
 <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 p-4">
   <div class="bg-white rounded-xl p-6 w-full max-w-lg max-h-screen overflow-y-auto">
-    <h3 class="text-xl font-bold mb-4">Editar Produto</h3>
+    <h3 class="text-xl font-bold mb-4" data-translate="editModalTitle">Editar Produto</h3>
     <form id="editProductForm">
       <input type="hidden" id="editId">
       <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Nome</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1" data-translate="formName">Nome</label>
         <input type="text" id="editNome" required class="w-full border border-gray-300 rounded-lg px-3 py-2">
       </div>
       <div class="mb-4">
@@ -239,26 +239,26 @@
         <input type="text" id="editCod" readonly class="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-100">
       </div>
       <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Quantidade</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1" data-translate="formQuantity">Quantidade</label>
         <input type="number" id="editQuantidade" required class="w-full border border-gray-300 rounded-lg px-3 py-2">
       </div>
       <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Foto</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1" data-translate="formPhoto">Foto</label>
         <div class="flex flex-col items-center">
           <video id="editCamera" class="w-full h-48 bg-gray-100 rounded-lg object-cover hidden" autoplay playsinline></video>
           <canvas id="editCanvas" class="hidden"></canvas>
           <img id="editPhotoPreview" class="w-full h-48 object-cover rounded-lg">
           <div class="flex gap-2 mt-2">
-            <button type="button" id="editStartCamera" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm">Ativar Câmera</button>
-            <button type="button" id="editTakePhoto" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm hidden">Tirar Foto</button>
+            <button type="button" id="editStartCamera" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm" data-translate="formActivateCam">Ativar Câmera</button>
+            <button type="button" id="editTakePhoto" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm hidden" data-translate="formTakePhoto">Tirar Foto</button>
           </div>
         </div>
       </div>
       <div class="flex justify-between gap-3 mt-6">
-        <button type="button" id="deleteProduct" class="px-4 py-2 bg-red-600 text-white rounded-lg hidden">Excluir</button>
+        <button type="button" id="deleteProduct" class="px-4 py-2 bg-red-600 text-white rounded-lg hidden" data-translate="formDelete">Excluir</button>
         <div class="flex gap-3">
-          <button type="button" id="closeEditModal" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700">Cancelar</button>
-          <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg">Salvar</button>
+          <button type="button" id="closeEditModal" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700" data-translate="formCancel">Cancelar</button>
+          <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg" data-translate="formSave">Salvar</button>
         </div>
       </div>
     </form>
@@ -268,25 +268,23 @@
 <!-- Modal Saída de Produto -->
 <div id="saidaModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 p-4">
   <div class="bg-white rounded-xl p-6 w-full max-w-lg">
-    <h3 class="text-xl font-bold mb-4">Registrar Saída de Produto</h3>
+    <h3 class="text-xl font-bold mb-4" data-translate="exitModalTitle">Registrar Saída de Produto</h3>
     <form id="saidaForm">
       <div class="mb-4">
-        <label for="saidaProdutoSelect" class="block text-sm font-medium text-gray-700 mb-1">Produto</label>
-        <select id="saidaProdutoSelect" required class="w-full border border-gray-300 rounded-lg px-3 py-2">
-          <option value="">Selecione um produto...</option>
-        </select>
+        <label for="saidaProdutoSelect" class="block text-sm font-medium text-gray-700 mb-1" data-translate="exitModalProductLabel">Produto</label>
+        <select id="saidaProdutoSelect" required class="w-full border border-gray-300 rounded-lg px-3 py-2"></select>
       </div>
       <div class="mb-4">
-        <label for="saidaQuantidade" class="block text-sm font-medium text-gray-700 mb-1">Quantidade</label>
+        <label for="saidaQuantidade" class="block text-sm font-medium text-gray-700 mb-1" data-translate="formQuantity">Quantidade</label>
         <input type="number" id="saidaQuantidade" min="1" required class="w-full border border-gray-300 rounded-lg px-3 py-2">
       </div>
       <div class="mb-4">
-        <label for="saidaSetor" class="block text-sm font-medium text-gray-700 mb-1">Setor de Destino</label>
-        <input type="text" id="saidaSetor" required class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="Ex: Produção, Administrativo">
+        <label for="saidaSetor" class="block text-sm font-medium text-gray-700 mb-1" data-translate="exitModalSectorLabel">Setor de Destino</label>
+        <input type="text" id="saidaSetor" required class="w-full border border-gray-300 rounded-lg px-3 py-2" data-translate-placeholder="exitModalSectorPlaceholder">
       </div>
       <div class="flex justify-end gap-3 mt-6">
-        <button type="button" id="closeSaidaModal" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700">Cancelar</button>
-        <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg">Confirmar Saída</button>
+        <button type="button" id="closeSaidaModal" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700" data-translate="formCancel">Cancelar</button>
+        <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg" data-translate="exitModalConfirmBtn">Confirmar Saída</button>
       </div>
     </form>
   </div>
@@ -295,16 +293,16 @@
 <!-- Modal Scanner -->
 <div id="scannerModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 p-4">
   <div class="bg-white rounded-xl p-6 w-full max-w-md">
-    <h3 class="text-xl font-bold mb-4">Escanear QR/Barcode</h3>
+    <h3 class="text-xl font-bold mb-4" data-translate="scannerModalTitle">Escanear QR/Barcode</h3>
     <div id="scanner" class="scanner-container mb-4 bg-gray-200 border-2 border-dashed rounded-lg">
       <div class="scanner-line"></div>
     </div>
-    <p id="scanResult" class="text-sm text-gray-600 text-center mb-4">Aguardando leitura…</p>
+    <p id="scanResult" class="text-sm text-gray-600 text-center mb-4" data-translate="scannerAwaiting">Aguardando leitura…</p>
     <div class="flex justify-center gap-3">
-      <button id="closeScanner" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700">Fechar</button>
-      <button id="confirmEntry" class="px-4 py-2 bg-green-600 text-white rounded-lg hidden">Entrada</button>
-      <button id="confirmExit" class="px-4 py-2 bg-red-600 text-white rounded-lg hidden">Saída</button>
-      <button id="locateProductBtn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hidden">Localizar</button>
+      <button id="closeScanner" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700" data-translate="scannerCloseBtn">Fechar</button>
+      <button id="confirmEntry" class="px-4 py-2 bg-green-600 text-white rounded-lg hidden" data-translate="scannerEntryBtn">Entrada</button>
+      <button id="confirmExit" class="px-4 py-2 bg-red-600 text-white rounded-lg hidden" data-translate="scannerExitBtn">Saída</button>
+      <button id="locateProductBtn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hidden" data-translate="scannerLocateBtn">Localizar</button>
     </div>
   </div>
 </div>
@@ -331,6 +329,90 @@
   const db = getDatabase(app);
   const produtosRef = ref(db, 'produtos');
   const movRef = ref(db, 'movimentacoes');
+
+  // =============== TRADUÇÃO (i18n) ===============
+  const translations = {
+    pt: {
+      loginTitle: "Login", loginUserLabel: "Usuário", loginUserPlaceholder: "Nome do Usuário", loginPassLabel: "Senha", loginPassPlaceholder: "Senha do usuário", loginEnterBtn: "Entrar",
+      navDashboard: "Dashboard", navProducts: "Produtos", navMovements: "Entradas/Saídas", navReports: "Relatórios", navQRCodes: "QR Codes", logoutBtn: "Sair",
+      dashboardTitle: "Dashboard", dashboardChartTitle: "Entradas x Saídas (Mensal)", chartLabelEntries: "Entradas", chartLabelExits: "Saídas", monthNames: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'], dashboardLowStockTitle: "Produtos com Baixo Estoque",
+      productsTitle: "Lista de Produtos", productsNewBtn: "Novo Produto", productsExitBtn: "Saída de Produto", productsScanBtn: "Escanear", productsSearchLabel: "Pesquisar Produtos", productsSearchPlaceholder: "Pesquisar por nome...",
+      movementsTitle: "Entradas / Saídas", movementsSearchLabel: "Pesquisar por nome do produto", movementsSearchPlaceholder: "Pesquisar por nome do produto...", filterAll: "Todas", filterEntries: "Entradas", filterExits: "Saídas", filterApplyBtn: "Filtrar", filterClearBtn: "Limpar",
+      reportsTitle: "Relatórios", reportsMovBtn: "Relatório de Movimentações", reportsStockBtn: "Relatório de Estoque Atual",
+      qrCodesTitle: "Gerar QR Codes", qrCodesPrintBtn: "Imprimir QR Codes",
+      footerRights: "© 2025 Sistema de Controle de Estoque CDC. Todos os direitos reservados.", footerDevelopedBy: "Desenvolvido por",
+      addModalTitle: "Cadastrar Novo Produto", formName: "Nome", formInitialQty: "Quantidade Inicial", formPhoto: "Foto", formActivateCam: "Ativar Câmera", formTakePhoto: "Tirar Foto", formCancel: "Cancelar", formSave: "Salvar",
+      editModalTitle: "Editar Produto", formQuantity: "Quantidade", formDelete: "Excluir",
+      exitModalTitle: "Registrar Saída de Produto", exitModalProductLabel: "Produto", exitModalSectorLabel: "Setor de Destino", exitModalSectorPlaceholder: "Ex: Produção, Administrativo", exitModalConfirmBtn: "Confirmar Saída",
+      scannerModalTitle: "Escanear QR/Barcode", scannerAwaiting: "Aguardando leitura…", scannerCloseBtn: "Fechar", scannerEntryBtn: "Entrada", scannerExitBtn: "Saída", scannerLocateBtn: "Localizar",
+      alertAccessDenied: "Acesso negado: Apenas administradores e operadores podem realizar esta ação.", alertSaveSuccess: "Produto salvo com sucesso!", alertUpdateSuccess: "Produto atualizado!", alertDeleteSuccess: "Produto excluído!", alertExitSuccess: "Saída registrada com sucesso!", alertEntrySuccess: "Entrada registrada com sucesso!", alertProductNotFound: "Produto não encontrado.", alertInsufficientStock: "Estoque insuficiente.", alertFillAllFields: "Preencha todos os campos corretamente.", alertConfirmDelete: "Deseja realmente excluir este produto?",
+      renderEditBtn: "Editar", renderNoProducts: "Nenhum produto encontrado.", renderLoadingMovements: "Carregando movimentações...", renderErrorMovements: "Ocorreu um erro ao carregar os dados.", renderNoMovements: "Nenhuma movimentação encontrada para os filtros aplicados.", selectProductPlaceholder: "Selecione um produto...",
+    },
+    en: {
+      loginTitle: "Login", loginUserLabel: "User", loginUserPlaceholder: "Username", loginPassLabel: "Password", loginPassPlaceholder: "User password", loginEnterBtn: "Enter",
+      navDashboard: "Dashboard", navProducts: "Products", navMovements: "Entries/Exits", navReports: "Reports", navQRCodes: "QR Codes", logoutBtn: "Logout",
+      dashboardTitle: "Dashboard", dashboardChartTitle: "Entries vs Exits (Monthly)", chartLabelEntries: "Entries", chartLabelExits: "Exits", monthNames: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], dashboardLowStockTitle: "Low Stock Products",
+      productsTitle: "Product List", productsNewBtn: "New Product", productsExitBtn: "Product Exit", productsScanBtn: "Scan", productsSearchLabel: "Search Products", productsSearchPlaceholder: "Search by name...",
+      movementsTitle: "Entries / Exits", movementsSearchLabel: "Search by product name", movementsSearchPlaceholder: "Search by product name...", filterAll: "All", filterEntries: "Entries", filterExits: "Exits", filterApplyBtn: "Filter", filterClearBtn: "Clear",
+      reportsTitle: "Reports", reportsMovBtn: "Movements Report", reportsStockBtn: "Current Stock Report",
+      qrCodesTitle: "Generate QR Codes", qrCodesPrintBtn: "Print QR Codes",
+      footerRights: "© 2025 CDC Inventory Control System. All rights reserved.", footerDevelopedBy: "Developed by",
+      addModalTitle: "Register New Product", formName: "Name", formInitialQty: "Initial Quantity", formPhoto: "Photo", formActivateCam: "Activate Camera", formTakePhoto: "Take Photo", formCancel: "Cancel", formSave: "Save",
+      editModalTitle: "Edit Product", formQuantity: "Quantity", formDelete: "Delete",
+      exitModalTitle: "Register Product Exit", exitModalProductLabel: "Product", exitModalSectorLabel: "Destination Sector", exitModalSectorPlaceholder: "E.g.: Production, Administrative", exitModalConfirmBtn: "Confirm Exit",
+      scannerModalTitle: "Scan QR/Barcode", scannerAwaiting: "Awaiting scan…", scannerCloseBtn: "Close", scannerEntryBtn: "Entry", scannerExitBtn: "Exit", scannerLocateBtn: "Locate",
+      alertAccessDenied: "Access denied: Only administrators and operators can perform this action.", alertSaveSuccess: "Product saved successfully!", alertUpdateSuccess: "Product updated!", alertDeleteSuccess: "Product deleted!", alertExitSuccess: "Exit registered successfully!", alertEntrySuccess: "Entry registered successfully!", alertProductNotFound: "Product not found.", alertInsufficientStock: "Insufficient stock.", alertFillAllFields: "Please fill all fields correctly.", alertConfirmDelete: "Do you really want to delete this product?",
+      renderEditBtn: "Edit", renderNoProducts: "No products found.", renderLoadingMovements: "Loading movements...", renderErrorMovements: "An error occurred while loading data.", renderNoMovements: "No movements found for the applied filters.", selectProductPlaceholder: "Select a product...",
+    },
+    zh: {
+      loginTitle: "登录", loginUserLabel: "用户", loginUserPlaceholder: "用户名", loginPassLabel: "密码", loginPassPlaceholder: "用户密码", loginEnterBtn: "进入",
+      navDashboard: "仪表板", navProducts: "产品", navMovements: "出入库", navReports: "报告", navQRCodes: "二维码", logoutBtn: "登出",
+      dashboardTitle: "仪表板", dashboardChartTitle: "月度出入库对比", chartLabelEntries: "入库", chartLabelExits: "出库", monthNames: ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'], dashboardLowStockTitle: "低库存产品",
+      productsTitle: "产品列表", productsNewBtn: "新产品", productsExitBtn: "产品出库", productsScanBtn: "扫描", productsSearchLabel: "搜索产品", productsSearchPlaceholder: "按名称搜索...",
+      movementsTitle: "出入库记录", movementsSearchLabel: "按产品名称搜索", movementsSearchPlaceholder: "按产品名称搜索...", filterAll: "全部", filterEntries: "入库", filterExits: "出库", filterApplyBtn: "筛选", filterClearBtn: "清除",
+      reportsTitle: "报告", reportsMovBtn: "出入库报告", reportsStockBtn: "当前库存报告",
+      qrCodesTitle: "生成二维码", qrCodesPrintBtn: "打印二维码",
+      footerRights: "© 2025 CDC 库存控制系统。版权所有。", footerDevelopedBy: "开发者",
+      addModalTitle: "注册新产品", formName: "名称", formInitialQty: "初始数量", formPhoto: "照片", formActivateCam: "激活摄像头", formTakePhoto: "拍照", formCancel: "取消", formSave: "保存",
+      editModalTitle: "编辑产品", formQuantity: "数量", formDelete: "删除",
+      exitModalTitle: "登记产品出库", exitModalProductLabel: "产品", exitModalSectorLabel: "目标部门", exitModalSectorPlaceholder: "例如：生产部、行政部", exitModalConfirmBtn: "确认出库",
+      scannerModalTitle: "扫描二维码/条形码", scannerAwaiting: "等待扫描…", scannerCloseBtn: "关闭", scannerEntryBtn: "入库", scannerExitBtn: "出库", scannerLocateBtn: "定位",
+      alertAccessDenied: "访问被拒绝：只有管理员和操作员才能执行此操作。", alertSaveSuccess: "产品保存成功！", alertUpdateSuccess: "产品已更新！", alertDeleteSuccess: "产品已删除！", alertExitSuccess: "出库登记成功！", alertEntrySuccess: "入库登记成功！", alertProductNotFound: "未找到产品。", alertInsufficientStock: "库存不足。", alertFillAllFields: "请正确填写所有字段。", alertConfirmDelete: "您确定要删除此产品吗？",
+      renderEditBtn: "编辑", renderNoProducts: "未找到产品。", renderLoadingMovements: "正在加载记录...", renderErrorMovements: "加载数据时发生错误。", renderNoMovements: "未找到符合筛选条件的记录。", selectProductPlaceholder: "选择一个产品...",
+    }
+  };
+
+  let currentLanguage = 'pt';
+
+  function getTranslation(key) {
+    return translations[currentLanguage][key] || key;
+  }
+
+  function translatePage() {
+    document.querySelectorAll('[data-translate]').forEach(el => {
+      const key = el.dataset.translate;
+      el.textContent = getTranslation(key);
+    });
+    document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
+      const key = el.dataset.translatePlaceholder;
+      el.placeholder = getTranslation(key);
+    });
+  }
+
+  function setLanguage(lang) {
+    if (translations[lang]) {
+      currentLanguage = lang;
+      localStorage.setItem('cdcLanguage', lang);
+      document.documentElement.lang = lang;
+      document.getElementById('languageSelector').value = lang;
+      translatePage();
+      if (!mainApp.classList.contains('hidden') && !document.getElementById('dashboard').classList.contains('hidden')) {
+        loadDashboard();
+      }
+    }
+  }
+
+  document.getElementById('languageSelector').onchange = (e) => setLanguage(e.target.value);
 
   // =============== LOGIN & SESSÃO ===============
   const loginScreen = document.getElementById('loginScreen');
@@ -360,6 +442,11 @@
   };
 
   window.addEventListener('load', () => {
+    const savedLang = localStorage.getItem('cdcLanguage');
+    const browserLang = navigator.language.split('-')[0];
+    const initialLang = savedLang || (['pt', 'en', 'zh'].includes(browserLang) ? browserLang : 'pt');
+    setLanguage(initialLang);
+
     const session = JSON.parse(localStorage.getItem('cdcSession'));
     if (session && session.expires > Date.now()) {
       currentUser = session;
@@ -433,7 +520,7 @@
       document.getElementById('cod').value = await generateUniqueCOD();
       startCamera.click();
     } else {
-      alert('Acesso negado: Apenas administradores e operadores podem cadastrar produtos.');
+      alert(getTranslation('alertAccessDenied'));
     }
   };
   closeAdd.onclick = () => { addModal.classList.add('hidden'); stopCamera(); resetCam(); };
@@ -476,7 +563,7 @@
     const cod = document.getElementById('cod').value.trim();
     const qtd = +document.getElementById('quantidade').value;
 
-    if (!nome || !cod) return alert('Preencha nome e COD');
+    if (!nome || !cod) return alert(getTranslation('alertFillAllFields'));
     if (qtd < 0) return alert('A quantidade inicial não pode ser negativa.');
 
     try {
@@ -488,7 +575,7 @@
       if (qtd > 0) {
         await push(movRef, { cod, nome, tipo: 'entrada', quantidade: qtd, data: new Date().toISOString(), responsavel: currentUser.username, setor: 'Cadastro Inicial' });
       }
-      alert('Produto salvo com sucesso!');
+      alert(getTranslation('alertSaveSuccess'));
       addModal.classList.add('hidden');
       form.reset();
       resetCam();
@@ -545,17 +632,17 @@
     const nome = document.getElementById('editNome').value.trim();
     const cod = document.getElementById('editCod').value.trim();
     const qtd = +document.getElementById('editQuantidade').value;
-    if (!nome || !cod) return alert('Preencha nome e COD');
+    if (!nome || !cod) return alert(getTranslation('alertFillAllFields'));
     update(ref(db, `produtos/${id}`), { nome, cod, quantidade: qtd, imagem: editCaptured || editPreview.src, dataAtualizacao: new Date().toISOString() })
-    .then(() => { alert('Produto atualizado!'); editModal.classList.add('hidden'); resetEditCam(); });
+    .then(() => { alert(getTranslation('alertUpdateSuccess')); editModal.classList.add('hidden'); resetEditCam(); });
   };
 
   deleteBtn.onclick = () => {
-    if (currentUser.role !== 'admin') return alert('Acesso negado: Apenas administradores podem excluir produtos.');
-    if (confirm('Deseja realmente excluir este produto?')) {
+    if (currentUser.role !== 'admin') return alert(getTranslation('alertAccessDenied'));
+    if (confirm(getTranslation('alertConfirmDelete'))) {
       const id = document.getElementById('editId').value;
       remove(ref(db, `produtos/${id}`)).then(() => {
-        alert('Produto excluído!');
+        alert(getTranslation('alertDeleteSuccess'));
         editModal.classList.add('hidden'); resetEditCam();
       });
     }
@@ -565,7 +652,7 @@
   function renderProdutos(container, data) {
     container.innerHTML = '';
     if (!data || Object.keys(data).length === 0) {
-      container.innerHTML = '<p class="col-span-1 md:col-span-2 lg:col-span-3 text-center text-gray-500">Nenhum produto encontrado.</p>';
+      container.innerHTML = `<p class="col-span-1 md:col-span-2 lg:col-span-3 text-center text-gray-500">${getTranslation('renderNoProducts')}</p>`;
       return;
     }
     Object.entries(data).forEach(([id, p]) => {
@@ -582,7 +669,7 @@
         <div class="flex justify-between items-center mt-3">
           <span class="text-2xl font-bold ${p.quantidade < 10 ? 'text-red-600' : 'text-green-600'}">${p.quantidade}</span>
           <div class="flex gap-2">
-            <button onclick="editProduct('${id}')" class="bg-blue-100 text-blue-700 p-2 rounded-lg">Editar</button>
+            <button onclick="editProduct('${id}')" class="bg-blue-100 text-blue-700 p-2 rounded-lg">${getTranslation('renderEditBtn')}</button>
           </div>
         </div>`;
       container.appendChild(div);
@@ -591,7 +678,7 @@
 
   window.editProduct = (id) => {
     if (currentUser.role !== 'admin' && currentUser.role !== 'operador') {
-      return alert('Acesso negado: Apenas administradores e operadores podem editar produtos.');
+      return alert(getTranslation('alertAccessDenied'));
     }
     const p = allProducts[id];
     if (p) {
@@ -607,7 +694,7 @@
 
   // =============== MOVIMENTAÇÕES ===============
   async function loadMovements() {
-    movList.innerHTML = '<p class="text-gray-500">Carregando movimentações...</p>';
+    movList.innerHTML = `<p class="text-gray-500">${getTranslation('renderLoadingMovements')}</p>`;
     try {
         const snap = await get(movRef);
         const data = snap.val() || {};
@@ -616,14 +703,14 @@
         renderMov(allMovements);
     } catch (error) {
         console.error("Erro ao carregar movimentações:", error);
-        movList.innerHTML = '<p class="text-red-500">Ocorreu um erro ao carregar os dados.</p>';
+        movList.innerHTML = `<p class="text-red-500">${getTranslation('renderErrorMovements')}</p>`;
     }
   }
 
   function renderMov(data) {
     movList.innerHTML = '';
     if (data.length === 0) {
-        movList.innerHTML = '<p class="text-gray-500">Nenhuma movimentação encontrada para os filtros aplicados.</p>';
+        movList.innerHTML = `<p class="text-gray-500">${getTranslation('renderNoMovements')}</p>`;
         return;
     }
     data.forEach(m => {
@@ -686,10 +773,10 @@
 
   openSaidaBtn.onclick = () => {
     if (currentUser.role !== 'admin' && currentUser.role !== 'operador') {
-      return alert('Acesso negado: Apenas administradores e operadores podem registrar saídas.');
+      return alert(getTranslation('alertAccessDenied'));
     }
     saidaForm.reset();
-    saidaProdutoSelect.innerHTML = '<option value="">Selecione um produto...</option>';
+    saidaProdutoSelect.innerHTML = `<option value="">${getTranslation('selectProductPlaceholder')}</option>`;
     Object.entries(allProducts).forEach(([id, p]) => {
       const option = document.createElement('option');
       option.value = id;
@@ -709,21 +796,21 @@
     const produtoId = saidaProdutoSelect.value;
     const quantidadeSaida = +document.getElementById('saidaQuantidade').value;
     const setor = document.getElementById('saidaSetor').value.trim();
-    if (!produtoId || quantidadeSaida <= 0 || !setor) { return alert('Preencha todos os campos corretamente.'); }
+    if (!produtoId || quantidadeSaida <= 0 || !setor) { return alert(getTranslation('alertFillAllFields')); }
 
     const selectedOption = saidaProdutoSelect.options[saidaProdutoSelect.selectedIndex];
     const quantidadeAtual = +selectedOption.dataset.quantidade;
     const produtoNome = selectedOption.dataset.nome;
     const produtoCod = selectedOption.dataset.cod;
 
-    if (quantidadeSaida > quantidadeAtual) { return alert(`Estoque insuficiente. Estoque atual: ${quantidadeAtual} un.`); }
+    if (quantidadeSaida > quantidadeAtual) { return alert(`${getTranslation('alertInsufficientStock')} Estoque atual: ${quantidadeAtual} un.`); }
 
     const novaQuantidade = quantidadeAtual - quantidadeSaida;
 
     try {
       await update(ref(db, `produtos/${produtoId}`), { quantidade: novaQuantidade });
       await push(movRef, { cod: produtoCod, nome: produtoNome, tipo: 'saida', quantidade: quantidadeSaida, setor, data: new Date().toISOString(), responsavel: currentUser.username });
-      alert('Saída registrada com sucesso!');
+      alert(getTranslation('alertExitSuccess'));
       saidaModal.classList.add('hidden'); saidaForm.reset();
     } catch (error) {
       alert('Ocorreu um erro ao registrar a saída.'); console.error("Erro ao registrar saída:", error);
@@ -742,7 +829,7 @@
     });
     const ctx = document.getElementById('chartMov').getContext('2d');
     if (chart) chart.destroy();
-    chart = new Chart(ctx, { type: 'bar', data: { labels: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'], datasets: [ { label: 'Entradas', data: meses.map(m => m.entrada), backgroundColor: '#10b981' }, { label: 'Saídas', data: meses.map(m => m.saida), backgroundColor: '#ef4444' } ] }, options: { responsive: true, scales: { y: { beginAtZero: true } } } });
+    chart = new Chart(ctx, { type: 'bar', data: { labels: getTranslation('monthNames'), datasets: [ { label: getTranslation('chartLabelEntries'), data: meses.map(m => m.entrada), backgroundColor: '#10b981' }, { label: getTranslation('chartLabelExits'), data: meses.map(m => m.saida), backgroundColor: '#ef4444' } ] }, options: { responsive: true, scales: { y: { beginAtZero: true } } } });
     lowStockList.innerHTML = '';
     Object.values(allProducts).filter(p => p.quantidade < 10).forEach(p => {
       const div = document.createElement('div');
@@ -755,7 +842,7 @@
   // =============== RELATÓRIOS PDF ===============
   document.getElementById('gerarMovPDF').onclick = async () => {
     const { jsPDF } = window.jspdf; const doc = new jsPDF();
-    doc.setFontSize(16); doc.text('Relatório de Movimentações', 105, 20, { align: 'center' });
+    doc.setFontSize(16); doc.text(getTranslation('reportsMovBtn'), 105, 20, { align: 'center' });
     doc.setFontSize(12); doc.text(`Gerado em: ${new Date().toLocaleString()}`, 20, 30); doc.text(`Responsável: ${currentUser.username}`, 20, 40);
     let y = 50;
     const snap = await get(movRef); const data = snap.val() || {};
@@ -770,7 +857,7 @@
 
   document.getElementById('gerarEstoquePDF').onclick = async () => {
     const { jsPDF } = window.jspdf; const doc = new jsPDF();
-    doc.setFontSize(16); doc.text('Relatório de Estoque', 105, 20, { align: 'center' });
+    doc.setFontSize(16); doc.text(getTranslation('reportsStockBtn'), 105, 20, { align: 'center' });
     doc.setFontSize(12); doc.text(`Gerado em: ${new Date().toLocaleString()}`, 20, 30); doc.text(`Responsável: ${currentUser.username}`, 20, 40);
     let y = 50;
     Object.values(allProducts).forEach(p => {
@@ -830,7 +917,7 @@
     if (!detected) {
       document.querySelector('#scanner').innerHTML = '<div class="scanner-line"></div>';
       btnEntry.classList.add('hidden'); btnExit.classList.add('hidden'); btnLocate.classList.add('hidden');
-      resultTxt.textContent = 'Aguardando leitura…';
+      resultTxt.textContent = getTranslation('scannerAwaiting');
       lastCode = null;
     }
   }
@@ -840,18 +927,18 @@
   btnLocate.onclick = () => locateProductByCode();
 
   async function handleScan(isEntry) {
-    if (currentUser.role !== 'admin' && currentUser.role !== 'operador') { return alert('Acesso negado.'); }
+    if (currentUser.role !== 'admin' && currentUser.role !== 'operador') { return alert(getTranslation('alertAccessDenied')); }
     const foundEntry = Object.entries(allProducts).find(([id, p]) => p.cod === lastCode);
     if (foundEntry) {
       const [id, p] = foundEntry;
       const nova = p.quantidade + (isEntry ? 1 : -1);
-      if (!isEntry && nova < 0) { alert('Estoque insuficiente'); }
+      if (!isEntry && nova < 0) { alert(getTranslation('alertInsufficientStock')); }
       else {
         await update(ref(db, `produtos/${id}`), { quantidade: nova });
         await push(movRef, { cod: p.cod, nome: p.nome, tipo: isEntry ? 'entrada' : 'saida', quantidade: 1, data: new Date().toISOString(), responsavel: currentUser.username });
-        alert(isEntry ? 'Entrada registrada!' : 'Saída registrada!');
+        alert(isEntry ? getTranslation('alertEntrySuccess') : getTranslation('alertExitSuccess'));
       }
-    } else { alert('Produto não encontrado'); }
+    } else { alert(getTranslation('alertProductNotFound')); }
     scannerModal.classList.add('hidden'); stopQuagga();
   }
 
@@ -871,7 +958,7 @@
           setTimeout(() => card.classList.remove('product-highlight'), 2000);
         }
       }, 300);
-    } else { alert('Produto não encontrado'); scannerModal.classList.add('hidden'); stopQuagga(); }
+    } else { alert(getTranslation('alertProductNotFound')); scannerModal.classList.add('hidden'); stopQuagga(); }
   }
 
   // =============== INICIALIZAÇÃO ===============
@@ -881,7 +968,6 @@
         const searchTerm = document.getElementById('productSearchInput').value.toLowerCase().trim();
         const filtered = Object.fromEntries(Object.entries(allProducts).filter(([id, p]) => p.nome.toLowerCase().includes(searchTerm)));
         renderProdutos(productListFull, searchTerm ? filtered : allProducts);
-        // Refresh dashboard low stock list if it is visible
         if (!document.getElementById('dashboard').classList.contains('hidden')) {
             loadDashboard();
         }
