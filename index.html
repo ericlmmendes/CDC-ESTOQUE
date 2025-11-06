@@ -29,10 +29,7 @@
     footer{margin-top:auto; width:100%;}
     .login-container {min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(to bottom right, #f8fafc, #e2e8f0);}
     .qr-printable { page-break-inside: avoid; margin: 10px; text-align: center; display: inline-block; vertical-align: top; }
-    .product-highlight {
-        transition: outline 0.2s ease-in-out;
-        outline: 3px solid #facc15; /* Tailwind yellow-400 */
-    }
+    .cursor-zoom-in { cursor: zoom-in; }
     @media print {
       body * { visibility: hidden; }
       #qrCodeList, #qrCodeList * { visibility: visible; }
@@ -116,6 +113,7 @@
 
       <!-- Produtos -->
       <section id="produtos" class="page-section hidden">
+        <div id="userInfo" class="mb-4 text-lg text-gray-700"></div>
         <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
           <h2 class="text-2xl font-bold" data-translate="productsTitle">Lista de Produtos</h2>
           <div class="flex gap-3 flex-wrap">
@@ -165,8 +163,14 @@
       <section id="relatorios" class="page-section hidden">
         <h2 class="text-2xl font-bold mb-6" data-translate="reportsTitle">Relatórios</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <button id="gerarMovPDF" class="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-xl font-semibold text-lg hover:shadow-lg transition" data-translate="reportsMovBtn">Relatório de Movimentações</button>
-          <button id="gerarEstoquePDF" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6 rounded-xl font-semibold text-lg hover:shadow-lg transition" data-translate="reportsStockBtn">Relatório de Estoque Atual</button>
+          <button id="gerarMovPDF" class="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-xl font-semibold text-lg hover:shadow-lg transition flex items-center justify-center gap-3">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M10.75 2.75a.75.75 0 00-1.5 0v8.614L6.295 8.235a.75.75 0 10-1.09 1.03l4.25 4.5a.75.75 0 001.09 0l4.25-4.5a.75.75 0 00-1.09-1.03l-2.955 3.129V2.75z"/><path d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z"/></svg>
+            <span data-translate="reportsMovBtn">Relatório de Movimentações</span>
+          </button>
+          <button id="gerarEstoquePDF" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6 rounded-xl font-semibold text-lg hover:shadow-lg transition flex items-center justify-center gap-3">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M7 3.5A1.5 1.5 0 018.5 2h3A1.5 1.5 0 0113 3.5v1.586a2 2 0 01.586 1.414l.828 4.143a.5.5 0 01-.483.557H6.07a.5.5 0 01-.483-.557l.828-4.143a2 2 0 01.586-1.414V3.5z"/><path d="M4 11.5A1.5 1.5 0 015.5 10h9a1.5 1.5 0 011.5 1.5v1.25a.75.75 0 00-1.5 0V12h-12v-.75a.75.75 0 00-1.5 0V11.5zM5.5 14a.5.5 0 00-.5.5v2.5a.5.5 0 001 0V14.5a.5.5 0 00-.5-.5zM8.5 14a.5.5 0 00-.5.5v2.5a.5.5 0 001 0V14.5a.5.5 0 00-.5-.5zm5.5-.5a.5.5 0 01.5.5v2.5a.5.5 0 01-1 0V14.5a.5.5 0 01.5-.5z"/></svg>
+            <span data-translate="reportsStockBtn">Relatório de Estoque Atual</span>
+          </button>
         </div>
       </section>
 
@@ -186,6 +190,16 @@
   <p data-translate="footerRights">© 2025 Sistema de Controle de Estoque CDC. Todos os direitos reservados.</p>
   <p><span data-translate="footerDevelopedBy">Desenvolvido por</span> <a href="mailto:ericlm.evo@gmail.com" class="text-blue-600 hover:underline">ERICLM.EVO</a></p>
 </footer>
+
+<!-- Modal Image Zoom -->
+<div id="imageZoomModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center hidden z-[60] p-4">
+  <div class="relative max-w-4xl max-h-[90vh]">
+    <img id="zoomedImage" src="" alt="Imagem ampliada do produto" class="max-w-full max-h-full object-contain rounded-lg">
+    <button id="closeZoomModal" class="absolute top-2 right-2 bg-white rounded-full p-2 text-gray-800 hover:bg-gray-200">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+    </button>
+  </div>
+</div>
 
 <!-- Modal Cadastro -->
 <div id="addModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 p-4">
@@ -309,7 +323,7 @@
 
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js';
-  import { getDatabase, ref, push, update, remove, onValue, get, query, orderByChild, startAt, endAt } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-database.js';
+  import { getDatabase, ref, push, update, remove, onValue, get, query, orderByChild, equalTo } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-database.js';
   import ACCESS_CONFIG from './info.js';
 
   const firebaseConfig = {
@@ -342,8 +356,9 @@
       editModalTitle: "Editar Produto", formQuantity: "Quantidade", formDelete: "Excluir",
       exitModalTitle: "Registrar Saída de Produto", exitModalProductLabel: "Produto", exitModalSectorLabel: "Setor de Destino", exitModalSectorPlaceholder: "Ex: Produção, Administrativo", exitModalConfirmBtn: "Confirmar Saída",
       scannerModalTitle: "Escanear QR/Barcode", scannerAwaiting: "Aguardando leitura…", scannerCloseBtn: "Fechar", scannerCodeDetected: "Código Detectado", scannerLocating: "Localizando produto...",
-      alertAccessDenied: "Acesso negado: Apenas administradores e operadores podem realizar esta ação.", alertSaveSuccess: "Produto salvo com sucesso!", alertUpdateSuccess: "Produto atualizado!", alertDeleteSuccess: "Produto excluído!", alertExitSuccess: "Saída registrada com sucesso!", alertEntrySuccess: "Entrada registrada com sucesso!", alertProductNotFound: "Produto não encontrado.", alertInsufficientStock: "Estoque insuficiente.", alertFillAllFields: "Preencha todos os campos corretamente.", alertConfirmDelete: "Deseja realmente excluir este produto?",
+      alertAccessDenied: "Acesso negado: Apenas administradores e operadores podem realizar esta ação.", alertSaveSuccess: "Produto salvo com sucesso!", alertUpdateSuccess: "Produto atualizado!", alertDeleteSuccess: "Produto excluído!", alertExitSuccess: "Saída registrada com sucesso!", alertEntrySuccess: "Entrada registrada com sucesso!", alertProductNotFound: "Produto não encontrado com o código fornecido.", alertInsufficientStock: "Estoque insuficiente.", alertFillAllFields: "Preencha todos os campos corretamente.", alertConfirmDelete: "Deseja realmente excluir este produto?",
       renderEditBtn: "Editar", renderNoProducts: "Nenhum produto encontrado.", renderLoadingMovements: "Carregando movimentações...", renderErrorMovements: "Ocorreu um erro ao carregar os dados.", renderNoMovements: "Nenhuma movimentação encontrada para os filtros aplicados.", selectProductPlaceholder: "Selecione um produto...",
+      userInfoGreeting: "Bem-vindo(a)",
     },
     en: {
       loginTitle: "Login", loginUserLabel: "User", loginUserPlaceholder: "Username", loginPassLabel: "Password", loginPassPlaceholder: "User password", loginEnterBtn: "Enter",
@@ -358,8 +373,9 @@
       editModalTitle: "Edit Product", formQuantity: "Quantity", formDelete: "Delete",
       exitModalTitle: "Register Product Exit", exitModalProductLabel: "Product", exitModalSectorLabel: "Destination Sector", exitModalSectorPlaceholder: "E.g.: Production, Administrative", exitModalConfirmBtn: "Confirm Exit",
       scannerModalTitle: "Scan QR/Barcode", scannerAwaiting: "Awaiting scan…", scannerCloseBtn: "Close", scannerCodeDetected: "Code Detected", scannerLocating: "Locating product...",
-      alertAccessDenied: "Access denied: Only administrators and operators can perform this action.", alertSaveSuccess: "Product saved successfully!", alertUpdateSuccess: "Product updated!", alertDeleteSuccess: "Product deleted!", alertExitSuccess: "Exit registered successfully!", alertEntrySuccess: "Entry registered successfully!", alertProductNotFound: "Product not found.", alertInsufficientStock: "Insufficient stock.", alertFillAllFields: "Please fill all fields correctly.", alertConfirmDelete: "Do you really want to delete this product?",
+      alertAccessDenied: "Access denied: Only administrators and operators can perform this action.", alertSaveSuccess: "Product saved successfully!", alertUpdateSuccess: "Product updated!", alertDeleteSuccess: "Product deleted!", alertExitSuccess: "Exit registered successfully!", alertEntrySuccess: "Entry registered successfully!", alertProductNotFound: "Product not found with the provided code.", alertInsufficientStock: "Insufficient stock.", alertFillAllFields: "Please fill all fields correctly.", alertConfirmDelete: "Do you really want to delete this product?",
       renderEditBtn: "Edit", renderNoProducts: "No products found.", renderLoadingMovements: "Loading movements...", renderErrorMovements: "An error occurred while loading data.", renderNoMovements: "No movements found for the applied filters.", selectProductPlaceholder: "Select a product...",
+      userInfoGreeting: "Welcome",
     },
     zh: {
       loginTitle: "登录", loginUserLabel: "用户", loginUserPlaceholder: "用户名", loginPassLabel: "密码", loginPassPlaceholder: "用户密码", loginEnterBtn: "进入",
@@ -374,8 +390,9 @@
       editModalTitle: "编辑产品", formQuantity: "数量", formDelete: "删除",
       exitModalTitle: "登记产品出库", exitModalProductLabel: "产品", exitModalSectorLabel: "目标部门", exitModalSectorPlaceholder: "例如：生产部、行政部", exitModalConfirmBtn: "确认出库",
       scannerModalTitle: "扫描二维码/条形码", scannerAwaiting: "等待扫描…", scannerCloseBtn: "关闭", scannerCodeDetected: "已检测到代码", scannerLocating: "正在定位产品...",
-      alertAccessDenied: "访问被拒绝：只有管理员和操作员才能执行此操作。", alertSaveSuccess: "产品保存成功！", alertUpdateSuccess: "产品已更新！", alertDeleteSuccess: "产品已删除！", alertExitSuccess: "出库登记成功！", alertEntrySuccess: "入库登记成功！", alertProductNotFound: "未找到产品。", alertInsufficientStock: "库存不足。", alertFillAllFields: "请正确填写所有字段。", alertConfirmDelete: "您确定要删除此产品吗？",
+      alertAccessDenied: "访问被拒绝：只有管理员和操作员才能执行此操作。", alertSaveSuccess: "产品保存成功！", alertUpdateSuccess: "产品已更新！", alertDeleteSuccess: "产品已删除！", alertExitSuccess: "出库登记成功！", alertEntrySuccess: "入库登记成功！", alertProductNotFound: "未找到具有所提供代码的产品。", alertInsufficientStock: "库存不足。", alertFillAllFields: "请正确填写所有字段。", alertConfirmDelete: "您确定要删除此产品吗？",
       renderEditBtn: "编辑", renderNoProducts: "未找到产品。", renderLoadingMovements: "正在加载记录...", renderErrorMovements: "加载数据时发生错误。", renderNoMovements: "未找到符合筛选条件的记录。", selectProductPlaceholder: "选择一个产品...",
+      userInfoGreeting: "欢迎",
     }
   };
 
@@ -394,6 +411,7 @@
       const key = el.dataset.translatePlaceholder;
       el.placeholder = getTranslation(key);
     });
+    updateUserInfo(); // Re-translate user info on language change
   }
 
   function setLanguage(lang) {
@@ -416,6 +434,13 @@
   const mainApp = document.getElementById('mainApp');
   let currentUser = null;
 
+  function updateUserInfo() {
+      const userInfoEl = document.getElementById('userInfo');
+      if (currentUser && userInfoEl) {
+        userInfoEl.innerHTML = `${getTranslation('userInfoGreeting')}, <strong class="text-blue-700">${currentUser.username}</strong> <span class="text-sm text-gray-500">(${currentUser.role})</span>`;
+      }
+  }
+
   document.getElementById('loginForm').onsubmit = e => {
     e.preventDefault();
     const user = document.getElementById('loginUser').value.trim();
@@ -428,6 +453,7 @@
       loginScreen.classList.add('hidden');
       mainApp.classList.remove('hidden');
       loadAllData();
+      updateUserInfo();
     } else {
       alert(ACCESS_CONFIG.loginErrorMessage);
     }
@@ -450,6 +476,7 @@
       loginScreen.classList.add('hidden');
       mainApp.classList.remove('hidden');
       loadAllData();
+      updateUserInfo();
     }
   });
 
@@ -493,7 +520,8 @@
     for (let i = 0; i < 20; i++) {
       cod += chars.charAt(Math.floor(Math.random() * chars.length));
     }
-    const snap = await get(query(produtosRef, orderByChild('cod'), startAt(cod), endAt(cod)));
+    const q = query(produtosRef, orderByChild('cod'), equalTo(cod));
+    const snap = await get(q);
     return snap.exists() ? generateUniqueCOD() : cod;
   }
 
@@ -564,7 +592,8 @@
     if (qtd < 0) return alert('A quantidade inicial não pode ser negativa.');
 
     try {
-      const snap = await get(query(produtosRef, orderByChild('cod'), startAt(cod), endAt(cod)));
+      const q = query(produtosRef, orderByChild('cod'), equalTo(cod));
+      const snap = await get(q);
       if (snap.exists()) { return alert('COD já cadastrado!'); }
 
       await push(produtosRef, { nome, cod, quantidade: qtd, imagem: captured || 'https://via.placeholder.com/150', dataCadastro: new Date().toISOString() });
@@ -645,7 +674,7 @@
     }
   };
 
-  // =============== RENDER PRODUTOS ===============
+  // =============== RENDER PRODUTOS E INTERAÇÕES ===============
   function renderProdutos(container, data) {
     container.innerHTML = '';
     if (!data || Object.keys(data).length === 0) {
@@ -655,10 +684,9 @@
     Object.entries(data).forEach(([id, p]) => {
       const div = document.createElement('div');
       div.className = 'bg-white border border-gray-200 rounded-xl p-5 hover:shadow-lg transition';
-      div.id = `product-card-${id}`;
       div.innerHTML = `
         <div class="flex justify-between items-start mb-3">
-          <img src="${p.imagem}" alt="${p.nome}" class="w-16 h-16 object-cover rounded-lg">
+          <img src="${p.imagem}" alt="${p.nome}" class="product-image w-16 h-16 object-cover rounded-lg cursor-zoom-in">
           <img src="https://api.qrserver.com/v1/create-qr-code/?size=60x60&data=${p.cod}" class="w-14 h-14">
         </div>
         <h3 class="font-semibold text-gray-800">${p.nome}</h3>
@@ -666,7 +694,7 @@
         <div class="flex justify-between items-center mt-3">
           <span class="text-2xl font-bold ${p.quantidade < 10 ? 'text-red-600' : 'text-green-600'} ">${p.quantidade}</span>
           <div class="flex gap-2">
-            <button onclick="editProduct('${id}')" class="bg-blue-100 text-blue-700 p-2 rounded-lg">${getTranslation('renderEditBtn')}</button>
+            <button data-product-id="${id}" class="edit-product-btn bg-blue-100 text-blue-700 p-2 rounded-lg hover:bg-blue-200 transition">${getTranslation('renderEditBtn')}</button>
           </div>
         </div>`;
       container.appendChild(div);
@@ -688,6 +716,30 @@
       editModal.classList.remove('hidden');
     }
   };
+
+  productListFull.addEventListener('click', (e) => {
+      const editButton = e.target.closest('.edit-product-btn');
+      if (editButton) {
+          const productId = editButton.dataset.productId;
+          editProduct(productId);
+          return;
+      }
+      if (e.target.classList.contains('product-image')) {
+          const imageUrl = e.target.src;
+          openImageZoom(imageUrl);
+      }
+  });
+
+  function openImageZoom(imageUrl) {
+    document.getElementById('zoomedImage').src = imageUrl;
+    document.getElementById('imageZoomModal').classList.remove('hidden');
+  }
+
+  document.getElementById('imageZoomModal').addEventListener('click', (e) => {
+      if (e.target.id === 'imageZoomModal' || e.target.closest('#closeZoomModal')) {
+          document.getElementById('imageZoomModal').classList.add('hidden');
+      }
+  });
 
   // =============== MOVIMENTAÇÕES ===============
   async function loadMovements() {
@@ -837,29 +889,74 @@
   }
 
   // =============== RELATÓRIOS PDF ===============
+  function addPdfHeader(doc, title) {
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text(title, doc.internal.pageSize.getWidth() / 2, 22, { align: 'center' });
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    const generationDate = `Gerado em: ${new Date().toLocaleString('pt-BR')}`;
+    const generatorUser = `Por: ${currentUser.username}`;
+    doc.text(generationDate, 14, 35);
+    doc.text(generatorUser, doc.internal.pageSize.getWidth() - 14, 35, { align: 'right' });
+    doc.setLineWidth(0.2);
+    doc.line(14, 40, doc.internal.pageSize.getWidth() - 14, 40);
+  }
+
   document.getElementById('gerarMovPDF').onclick = async () => {
-    const { jsPDF } = window.jspdf; const doc = new jsPDF();
-    doc.setFontSize(16); doc.text(getTranslation('reportsMovBtn'), 105, 20, { align: 'center' });
-    doc.setFontSize(12); doc.text(`Gerado em: ${new Date().toLocaleString()}`, 20, 30); doc.text(`Responsável: ${currentUser.username}`, 20, 40);
-    let y = 50;
-    const snap = await get(movRef); const data = snap.val() || {};
-    Object.values(data).reverse().slice(0, 50).forEach(m => {
-      if (y > 270) { doc.addPage(); y = 20; }
-      const setorInfo = (m.tipo === 'saida' && m.setor) ? ` | Setor: ${m.setor}` : '';
-      doc.text(`${new Date(m.data).toLocaleString()} | ${m.nome} | ${m.tipo} | ${m.quantidade} | Resp: ${m.responsavel}${setorInfo}`, 20, y);
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    addPdfHeader(doc, getTranslation('reportsMovBtn'));
+
+    let y = 55;
+    const headers = ["Data", "Produto", "Tipo", "Qtd", "Responsável", "Setor"];
+    doc.setFont('helvetica', 'bold');
+    doc.text(headers[0], 14, y);
+    doc.text(headers[1], 50, y);
+    doc.text(headers[2], 115, y);
+    doc.text(headers[3], 135, y);
+    doc.text(headers[4], 150, y);
+    doc.text(headers[5], 180, y);
+    y += 7;
+    doc.setFont('helvetica', 'normal');
+
+    const snap = await get(movRef);
+    const data = snap.val() || {};
+    const sortedMovements = Object.values(data).sort((a,b) => new Date(b.data) - new Date(a.data));
+
+    sortedMovements.forEach(m => {
+      if (y > 280) { doc.addPage(); y = 20; }
+      doc.text(new Date(m.data).toLocaleDateString(), 14, y);
+      doc.text(m.nome, 50, y, { maxWidth: 60 });
+      doc.text(m.tipo, 115, y);
+      doc.text(String(m.quantidade), 135, y);
+      doc.text(m.responsavel, 150, y);
+      doc.text(m.setor || '-', 180, y);
       y += 10;
     });
     doc.save('relatorio_movimentacoes.pdf');
   };
 
-  document.getElementById('gerarEstoquePDF').onclick = async () => {
-    const { jsPDF } = window.jspdf; const doc = new jsPDF();
-    doc.setFontSize(16); doc.text(getTranslation('reportsStockBtn'), 105, 20, { align: 'center' });
-    doc.setFontSize(12); doc.text(`Gerado em: ${new Date().toLocaleString()}`, 20, 30); doc.text(`Responsável: ${currentUser.username}`, 20, 40);
-    let y = 50;
-    Object.values(allProducts).forEach(p => {
-      if (y > 270) { doc.addPage(); y = 20; }
-      doc.text(`${p.nome} | COD: ${p.cod} | Estoque: ${p.quantidade}`, 20, y);
+  document.getElementById('gerarEstoquePDF').onclick = () => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    addPdfHeader(doc, getTranslation('reportsStockBtn'));
+
+    let y = 55;
+    const headers = ["Produto", "COD", "Estoque"];
+    doc.setFont('helvetica', 'bold');
+    doc.text(headers[0], 14, y);
+    doc.text(headers[1], 120, y);
+    doc.text(headers[2], 200, y, { align: 'right' });
+    y += 7;
+    doc.setFont('helvetica', 'normal');
+
+    const sortedProducts = Object.values(allProducts).sort((a,b) => a.nome.localeCompare(b.nome));
+    sortedProducts.forEach(p => {
+      if (y > 280) { doc.addPage(); y = 20; }
+      doc.text(p.nome, 14, y, { maxWidth: 100 });
+      doc.text(p.cod, 120, y);
+      doc.text(String(p.quantidade), 200, y, { align: 'right' });
       y += 10;
     });
     doc.save('relatorio_estoque.pdf');
@@ -915,25 +1012,16 @@
     resultTxt.textContent = getTranslation('scannerAwaiting');
   }
 
-  function locateProductByCode(code) {
+  async function locateProductByCode(code) {
+    scannerModal.classList.add('hidden');
     const foundEntry = Object.entries(allProducts).find(([id, p]) => p.cod === code);
+    
     if (foundEntry) {
-      const [id, p] = foundEntry;
-      scannerModal.classList.add('hidden');
+      const [id, product] = foundEntry;
       document.querySelector('[data-page="produtos"]').click();
-      productSearchInput.value = p.nome;
-      productSearchInput.dispatchEvent(new Event('input', { bubbles: true }));
-      setTimeout(() => {
-        const card = document.getElementById(`product-card-${id}`);
-        if(card) {
-          card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          card.classList.add('product-highlight');
-          setTimeout(() => card.classList.remove('product-highlight'), 2000);
-        }
-      }, 300);
+      editProduct(id);
     } else {
       alert(getTranslation('alertProductNotFound'));
-      scannerModal.classList.add('hidden');
     }
   }
 
