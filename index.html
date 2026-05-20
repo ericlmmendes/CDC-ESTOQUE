@@ -307,9 +307,10 @@
 <!-- Modal Scanner -->
 <div id="scannerModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 p-4">
   <div class="bg-white rounded-xl p-6 w-full max-w-md">
-    <h3 class="text-xl font-bold mb-4" data-translate="scannerModalTitle">Escanear QR/Barcode</h3>
-    <div id="scanner" class="scanner-container mb-4 bg-gray-200 border-2 border-dashed rounded-lg">
-      <div class="scanner-line"></div>
+    <h3 class="text-xl font-bold mb-4" data-translate="scannerModalTitle">Localizar Produto via PDA</h3>
+    <div class="mb-4">
+      <label for="scannerInput" class="block text-sm font-medium text-gray-700 mb-2" data-translate="scannerInputLabel">Código do Produto</label>
+      <input type="text" id="scannerInput" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Aponte o leitor PDA aqui..." data-translate-placeholder="scannerInputPlaceholder">
     </div>
     <p id="scanResult" class="text-sm text-gray-600 text-center mb-4" data-translate="scannerAwaiting">Aguardando leitura…</p>
     <div class="flex justify-center">
@@ -347,7 +348,7 @@
       loginTitle: "Login", loginUserLabel: "Usuário", loginUserPlaceholder: "Nome do Usuário", loginPassLabel: "Senha", loginPassPlaceholder: "Senha do usuário", loginEnterBtn: "Entrar",
       navDashboard: "Dashboard", navProducts: "Produtos", navMovements: "Entradas/Saídas", navReports: "Relatórios", navQRCodes: "QR Codes", logoutBtn: "Sair",
       dashboardTitle: "Dashboard", dashboardChartTitle: "Entradas x Saídas (Mensal)", chartLabelEntries: "Entradas", chartLabelExits: "Saídas", monthNames: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'], dashboardLowStockTitle: "Produtos com Baixo Estoque",
-      productsTitle: "Lista de Produtos", productsNewBtn: "Novo Produto", productsExitBtn: "Saída de Produto", productsScanBtn: "Escanear", productsSearchLabel: "Pesquisar Produtos", productsSearchPlaceholder: "Pesquisar por nome...",
+      productsTitle: "Lista de Produtos", productsNewBtn: "Novo Produto", productsExitBtn: "Saída de Produto", productsScanBtn: "Localizar via PDA", productsSearchLabel: "Pesquisar Produtos", productsSearchPlaceholder: "Pesquisar por nome ou COD...",
       movementsTitle: "Entradas / Saídas", movementsSearchLabel: "Pesquisar por nome do produto", movementsSearchPlaceholder: "Pesquisar por nome do produto...", filterAll: "Todas", filterEntries: "Entradas", filterExits: "Saídas", filterApplyBtn: "Filtrar", filterClearBtn: "Limpar",
       reportsTitle: "Relatórios", reportsMovBtn: "Relatório de Movimentações", reportsStockBtn: "Relatório de Estoque Atual",
       qrCodesTitle: "Gerar QR Codes", qrCodesPrintBtn: "Imprimir QR Codes",
@@ -355,7 +356,7 @@
       addModalTitle: "Cadastrar Novo Produto", formName: "Nome", formInitialQty: "Quantidade Inicial", formPhoto: "Foto", formActivateCam: "Ativar Câmera", formTakePhoto: "Tirar Foto", formCancel: "Cancelar", formSave: "Salvar",
       editModalTitle: "Editar Produto", formQuantity: "Quantidade", formDelete: "Excluir",
       exitModalTitle: "Registrar Saída de Produto", exitModalProductLabel: "Produto", exitModalSectorLabel: "Setor de Destino", exitModalSectorPlaceholder: "Ex: Produção, Administrativo", exitModalConfirmBtn: "Confirmar Saída",
-      scannerModalTitle: "Escanear QR/Barcode", scannerAwaiting: "Aguardando leitura…", scannerCloseBtn: "Fechar", scannerCodeDetected: "Código Detectado", scannerLocating: "Localizando produto...",
+      scannerModalTitle: "Localizar Produto via PDA", scannerInputLabel: "Código do Produto", scannerInputPlaceholder: "Aponte o leitor PDA aqui...", scannerAwaiting: "Aguardando leitura…", scannerCloseBtn: "Fechar", scannerCodeDetected: "Código Detectado", scannerLocating: "Localizando produto...",
       alertAccessDenied: "Acesso negado: Apenas administradores e operadores podem realizar esta ação.", alertSaveSuccess: "Produto salvo com sucesso!", alertUpdateSuccess: "Produto atualizado!", alertDeleteSuccess: "Produto excluído!", alertExitSuccess: "Saída registrada com sucesso!", alertEntrySuccess: "Entrada registrada com sucesso!", alertProductNotFound: "Produto não encontrado com o código fornecido.", alertInsufficientStock: "Estoque insuficiente.", alertFillAllFields: "Preencha todos os campos corretamente.", alertConfirmDelete: "Deseja realmente excluir este produto?",
       renderEditBtn: "Editar", renderNoProducts: "Nenhum produto encontrado.", renderLoadingMovements: "Carregando movimentações...", renderErrorMovements: "Ocorreu um erro ao carregar os dados.", renderNoMovements: "Nenhuma movimentação encontrada para os filtros aplicados.", selectProductPlaceholder: "Selecione um produto...",
       userInfoGreeting: "Bem-vindo(a)",
@@ -364,7 +365,7 @@
       loginTitle: "Login", loginUserLabel: "User", loginUserPlaceholder: "Username", loginPassLabel: "Password", loginPassPlaceholder: "User password", loginEnterBtn: "Enter",
       navDashboard: "Dashboard", navProducts: "Products", navMovements: "Entries/Exits", navReports: "Reports", navQRCodes: "QR Codes", logoutBtn: "Logout",
       dashboardTitle: "Dashboard", dashboardChartTitle: "Entries vs Exits (Monthly)", chartLabelEntries: "Entries", chartLabelExits: "Exits", monthNames: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], dashboardLowStockTitle: "Low Stock Products",
-      productsTitle: "Product List", productsNewBtn: "New Product", productsExitBtn: "Product Exit", productsScanBtn: "Scan", productsSearchLabel: "Search Products", productsSearchPlaceholder: "Search by name...",
+      productsTitle: "Product List", productsNewBtn: "New Product", productsExitBtn: "Product Exit", productsScanBtn: "Locate via PDA", productsSearchLabel: "Search Products", productsSearchPlaceholder: "Search by name or COD...",
       movementsTitle: "Entries / Exits", movementsSearchLabel: "Search by product name", movementsSearchPlaceholder: "Search by product name...", filterAll: "All", filterEntries: "Entries", filterExits: "Exits", filterApplyBtn: "Filter", filterClearBtn: "Clear",
       reportsTitle: "Reports", reportsMovBtn: "Movements Report", reportsStockBtn: "Current Stock Report",
       qrCodesTitle: "Generate QR Codes", qrCodesPrintBtn: "Print QR Codes",
@@ -372,7 +373,7 @@
       addModalTitle: "Register New Product", formName: "Name", formInitialQty: "Initial Quantity", formPhoto: "Photo", formActivateCam: "Activate Camera", formTakePhoto: "Take Photo", formCancel: "Cancel", formSave: "Save",
       editModalTitle: "Edit Product", formQuantity: "Quantity", formDelete: "Delete",
       exitModalTitle: "Register Product Exit", exitModalProductLabel: "Product", exitModalSectorLabel: "Destination Sector", exitModalSectorPlaceholder: "E.g.: Production, Administrative", exitModalConfirmBtn: "Confirm Exit",
-      scannerModalTitle: "Scan QR/Barcode", scannerAwaiting: "Awaiting scan…", scannerCloseBtn: "Close", scannerCodeDetected: "Code Detected", scannerLocating: "Locating product...",
+      scannerModalTitle: "Locate Product via PDA", scannerInputLabel: "Product Code", scannerInputPlaceholder: "Point PDA reader here...", scannerAwaiting: "Awaiting scan…", scannerCloseBtn: "Close", scannerCodeDetected: "Code Detected", scannerLocating: "Locating product...",
       alertAccessDenied: "Access denied: Only administrators and operators can perform this action.", alertSaveSuccess: "Product saved successfully!", alertUpdateSuccess: "Product updated!", alertDeleteSuccess: "Product deleted!", alertExitSuccess: "Exit registered successfully!", alertEntrySuccess: "Entry registered successfully!", alertProductNotFound: "Product not found with the provided code.", alertInsufficientStock: "Insufficient stock.", alertFillAllFields: "Please fill all fields correctly.", alertConfirmDelete: "Do you really want to delete this product?",
       renderEditBtn: "Edit", renderNoProducts: "No products found.", renderLoadingMovements: "Loading movements...", renderErrorMovements: "An error occurred while loading data.", renderNoMovements: "No movements found for the applied filters.", selectProductPlaceholder: "Select a product...",
       userInfoGreeting: "Welcome",
@@ -381,7 +382,7 @@
       loginTitle: "登录", loginUserLabel: "用户", loginUserPlaceholder: "用户名", loginPassLabel: "密码", loginPassPlaceholder: "用户密码", loginEnterBtn: "进入",
       navDashboard: "仪表板", navProducts: "产品", navMovements: "出入库", navReports: "报告", navQRCodes: "二维码", logoutBtn: "登出",
       dashboardTitle: "仪表板", dashboardChartTitle: "月度出入库对比", chartLabelEntries: "入库", chartLabelExits: "出库", monthNames: ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'], dashboardLowStockTitle: "低库存产品",
-      productsTitle: "产品列表", productsNewBtn: "新产品", productsExitBtn: "产品出库", productsScanBtn: "扫描", productsSearchLabel: "搜索产品", productsSearchPlaceholder: "按名称搜索...",
+      productsTitle: "产品列表", productsNewBtn: "新产品", productsExitBtn: "产品出库", productsScanBtn: "通过PDA定位", productsSearchLabel: "搜索产品", productsSearchPlaceholder: "按名称或COD搜索...",
       movementsTitle: "出入库记录", movementsSearchLabel: "按产品名称搜索", movementsSearchPlaceholder: "按产品名称搜索...", filterAll: "全部", filterEntries: "入库", filterExits: "出库", filterApplyBtn: "筛选", filterClearBtn: "清除",
       reportsTitle: "报告", reportsMovBtn: "出入库报告", reportsStockBtn: "当前库存报告",
       qrCodesTitle: "生成二维码", qrCodesPrintBtn: "打印二维码",
@@ -389,7 +390,7 @@
       addModalTitle: "注册新产品", formName: "名称", formInitialQty: "初始数量", formPhoto: "照片", formActivateCam: "激活摄像头", formTakePhoto: "拍照", formCancel: "取消", formSave: "保存",
       editModalTitle: "编辑产品", formQuantity: "数量", formDelete: "删除",
       exitModalTitle: "登记产品出库", exitModalProductLabel: "产品", exitModalSectorLabel: "目标部门", exitModalSectorPlaceholder: "例如：生产部、行政部", exitModalConfirmBtn: "确认出库",
-      scannerModalTitle: "扫描二维码/条形码", scannerAwaiting: "等待扫描…", scannerCloseBtn: "关闭", scannerCodeDetected: "已检测到代码", scannerLocating: "正在定位产品...",
+      scannerModalTitle: "通过PDA定位产品", scannerInputLabel: "产品代码", scannerInputPlaceholder: "将PDA阅读器指向此处...", scannerAwaiting: "等待扫描…", scannerCloseBtn: "关闭", scannerCodeDetected: "已检测到代码", scannerLocating: "正在定位产品...",
       alertAccessDenied: "访问被拒绝：只有管理员和操作员才能执行此操作。", alertSaveSuccess: "产品保存成功！", alertUpdateSuccess: "产品已更新！", alertDeleteSuccess: "产品已删除！", alertExitSuccess: "出库登记成功！", alertEntrySuccess: "入库登记成功！", alertProductNotFound: "未找到具有所提供代码的产品。", alertInsufficientStock: "库存不足。", alertFillAllFields: "请正确填写所有字段。", alertConfirmDelete: "您确定要删除此产品吗？",
       renderEditBtn: "编辑", renderNoProducts: "未找到产品。", renderLoadingMovements: "正在加载记录...", renderErrorMovements: "加载数据时发生错误。", renderNoMovements: "未找到符合筛选条件的记录。", selectProductPlaceholder: "选择一个产品...",
       userInfoGreeting: "欢迎",
@@ -507,7 +508,8 @@
       const searchTerm = productSearchInput.value.toLowerCase().trim();
       const filteredProducts = Object.fromEntries(
           Object.entries(allProducts).filter(([id, product]) =>
-              product.nome.toLowerCase().includes(searchTerm)
+              product.nome.toLowerCase().includes(searchTerm) ||
+              product.cod.toLowerCase().includes(searchTerm)
           )
       );
       renderProdutos(productListFull, filteredProducts);
@@ -979,49 +981,52 @@
   const scannerModal = document.getElementById('scannerModal');
   const openScan = document.getElementById('openScanner');
   const closeScan = document.getElementById('closeScanner');
+  const scannerInput = document.getElementById('scannerInput');
   const resultTxt = document.getElementById('scanResult');
-  let quaggaRunning = false;
 
-  openScan.onclick = () => { scannerModal.classList.remove('hidden'); setTimeout(startQuagga, 200); };
-  closeScan.onclick = () => { scannerModal.classList.add('hidden'); stopQuagga(); };
+  let scanTimeout = null;
 
-  function startQuagga() {
-    if (quaggaRunning) return;
-    Quagga.init({ inputStream: { name: "Live", type: "LiveStream", target: document.querySelector('#scanner'), constraints: { facingMode: "environment" } }, decoder: { readers: ["code_128_reader","ean_reader","ean_8_reader","qr_code_reader"] }, locate: true }, err => {
-      if (err) { resultTxt.textContent = 'Erro ao iniciar câmera.'; return; }
-      Quagga.start();
-      quaggaRunning = true;
-    });
-
-    Quagga.onDetected(data => {
-      if (!quaggaRunning) return;
-      const code = data.codeResult.code;
-      stopQuagga();
-      resultTxt.textContent = `${getTranslation('scannerCodeDetected')}: ${code}. ${getTranslation('scannerLocating')}`;
-      navigator.vibrate(200);
-      setTimeout(() => locateProductByCode(code), 500);
-    });
-  }
-
-  function stopQuagga() {
-    if (quaggaRunning) {
-      Quagga.stop();
-    }
-    quaggaRunning = false;
-    document.querySelector('#scanner').innerHTML = '<div class="scanner-line"></div>';
+  openScan.onclick = () => { 
+    scannerModal.classList.remove('hidden'); 
+    scannerInput.value = '';
+    scannerInput.focus();
     resultTxt.textContent = getTranslation('scannerAwaiting');
-  }
+  };
+  closeScan.onclick = () => { scannerModal.classList.add('hidden'); scannerInput.value = ''; clearTimeout(scanTimeout); };
+
+  scannerInput.addEventListener('input', (e) => {
+    const code = e.target.value.replace(/\s+/g, '').trim();
+    clearTimeout(scanTimeout);
+    if (code.length > 0) {
+      resultTxt.textContent = `${getTranslation('scannerCodeDetected')}: ${code}. ${getTranslation('scannerLocating')}`;
+      navigator.vibrate && navigator.vibrate(200);
+      scanTimeout = setTimeout(() => locateProductByCode(code), 500);
+    }
+  });
+
+  scannerInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      clearTimeout(scanTimeout);
+      const code = scannerInput.value.replace(/\s+/g, '').trim();
+      if (code.length > 0) {
+        resultTxt.textContent = `${getTranslation('scannerCodeDetected')}: ${code}. ${getTranslation('scannerLocating')}`;
+        navigator.vibrate && navigator.vibrate(200);
+        locateProductByCode(code);
+      }
+    }
+  });
 
   async function locateProductByCode(code) {
     scannerModal.classList.add('hidden');
-    const foundEntry = Object.entries(allProducts).find(([id, p]) => p.cod === code);
+    code = code.replace(/\s+/g, '').trim();
+    const foundEntry = Object.entries(allProducts).find(([id, p]) => p.cod.toLowerCase() === code.toLowerCase());
     
     if (foundEntry) {
       const [id, product] = foundEntry;
-      document.querySelector('[data-page="produtos"]').click();
       editProduct(id);
     } else {
-      alert(getTranslation('alertProductNotFound'));
+      alert(getTranslation('alertProductNotFound') + ` Código: ${code}`);
     }
   }
 
