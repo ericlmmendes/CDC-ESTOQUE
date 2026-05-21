@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -13,6 +12,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <!-- Biblioteca para Excel -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
     body {font-family:'Poppins',sans-serif; display:flex; flex-direction:column; min-height:100vh; margin:0;}
     .custom-shadow{box-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -2px rgba(0,0,0,.05);}
@@ -227,7 +228,6 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div class="lg:col-span-1 bg-white p-6 rounded-xl border">
                 <h3 class="font-semibold mb-4" data-translate="collectScannerTitle">Escanear Produto (PDA)</h3>
-                <!-- NOTA: Adicionada dica visual para usar o botão Enter no PDA -->
                 <p class="text-xs text-gray-500 mb-2">Aperte Enter após ler o código.</p>
                 <input type="text" id="collectPdaInput" class="w-full border border-gray-300 rounded-lg px-3 py-2 mb-4 focus:ring-blue-500" data-translate-placeholder="scannerInputPlaceholder">
                 
@@ -262,7 +262,6 @@
 
       <!-- Relatórios -->
       <section id="relatorios" class="page-section hidden">
-        <!-- Manter o conteúdo original -->
         <h2 class="text-2xl font-bold mb-6" data-translate="reportsTitle">Relatórios</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <button id="gerarMovPDF" class="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-xl font-semibold text-lg hover:shadow-lg transition flex items-center justify-center gap-3">
@@ -287,7 +286,7 @@
   </div>
 </div>
 
-<!-- Modal Identificação Coletor -->
+<!-- Modal Identificação Coletor/Conferente -->
 <div id="namePromptModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-[80] p-4">
   <div class="bg-white rounded-xl p-6 w-full max-w-sm">
     <h3 class="text-xl font-bold mb-4" id="namePromptTitle">Identificação</h3>
@@ -314,8 +313,13 @@
         </div>
     </div>
     <div id="verifyDetailList" class="space-y-2 border-t pt-4"></div>
-    <div class="flex justify-end mt-6">
-      <button id="closeVerifyModal" class="px-4 py-2 bg-blue-600 text-white rounded-lg">Fechar</button>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6">
+      <button id="btnExportVerifyExcel" class="px-4 py-2 bg-green-600 text-white rounded-lg font-bold flex items-center justify-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          Gerar Excel
+      </button>
+      <button id="btnFinalizeVerification" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-bold">Confirmar e Baixar Estoque</button>
+      <button id="closeVerifyModal" class="sm:col-span-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg">Fechar</button>
     </div>
   </div>
 </div>
@@ -339,7 +343,6 @@
 <!-- Modal Cadastro -->
 <div id="addModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 p-4">
   <div class="bg-white rounded-xl p-6 w-full max-w-lg max-h-screen overflow-y-auto">
-    <!-- Manter o conteúdo original -->
     <h3 class="text-xl font-bold mb-4" data-translate="addModalTitle">Cadastrar Novo Produto</h3>
     <form id="productForm">
       <div class="mb-4">
@@ -377,7 +380,6 @@
 <!-- Modal Edição -->
 <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 p-4">
   <div class="bg-white rounded-xl p-6 w-full max-w-lg max-h-screen overflow-y-auto">
-    <!-- Manter o conteúdo original -->
     <h3 class="text-xl font-bold mb-4" data-translate="editModalTitle">Editar Produto</h3>
     <form id="editProductForm">
       <input type="hidden" id="editId">
@@ -465,15 +467,14 @@
   import ACCESS_CONFIG from './info.js';
 
   const firebaseConfig = {
-    apiKey: "AIzaSyCRiN9bG96FJdOslh_nx3Apmwb8VqdXrsU",
-    authDomain: "evocortes-dfa04.firebaseapp.com",
-    databaseURL: "https://evocortes-dfa04-default-rtdb.firebaseio.com",
-    projectId: "evocortes-dfa04",
-    storageBucket: "evocortes-dfa04.firebasestorage.app",
-    messagingSenderId: "431410895933",
-    appId: "1:431410895933:web:cbe3d898e471e183bf5e54",
-    measurementId: "G-KEMS99F9L3"
-};
+    apiKey: "AIzaSyCPoCn98zQYHhsQp7oYyYC3p6pejLyCKdk",
+    authDomain: "tough-messenger-467220-h2.firebaseapp.com",
+    databaseURL: "https://tough-messenger-467220-h2-default-rtdb.firebaseio.com",
+    projectId: "tough-messenger-467220-h2",
+    storageBucket: "tough-messenger-467220-h2.firebasestorage.app",
+    messagingSenderId: "797984737364",
+    appId: "1:797984737364:web:7c9cf10ca4169e581f45c1"
+  };
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
@@ -714,7 +715,7 @@
   
   buildNav();
 
-     // =============== PESQUISA DE PRODUTOS ===============
+  // =============== PESQUISA DE PRODUTOS ===============
   const productSearchInput = document.getElementById('productSearchInput');
   productSearchInput.addEventListener('input', () => {
       const searchTerm = productSearchInput.value.toLowerCase().trim();
@@ -726,7 +727,8 @@
       );
       renderProdutos(productListFull, filteredProducts);
   });
-    // =============== GERAÇÃO DE COD AUTOMÁTICO ===============
+
+  // =============== GERAÇÃO DE COD AUTOMÁTICO ===============
   async function generateUniqueCOD() {
     const chars = '0123456789';
     let cod = '';
@@ -820,7 +822,7 @@
       resetCam();
     } catch (error) {
       console.error("Erro ao salvar produto:", error);
-      alert("Ocorreu um erro ao salvar the produto. Tente novamente.");
+      alert("Ocorreu um erro ao salvar o produto. Tente novamente.");
     }
   };
 
@@ -1026,7 +1028,7 @@
       renderMov(allMovements);
   };
 
-  // =============== DIRECIONAMENTO DE COLETA (COM LOCAL) ===============
+  // =============== DIRECIONAMENTO DE COLETA ===============
   let pendingDispatchList = [];
 
   function loadDirecionamento() {
@@ -1047,23 +1049,19 @@
         let foundProduct = null;
         let qty = 1;
         
-        // NOVO: Capturando a primeira palavra da linha como Local (ex: RDCMG1)
         const parts = line.trim().split(/\s+/);
         const local = parts.length > 0 ? parts[0].toUpperCase() : "GERAL";
 
-        // Tenta encontrar o melhor match de nome
         Object.values(allProducts).forEach(p => {
             if (lineLower.includes(p.nome.toLowerCase())) {
                 foundProduct = p;
             }
         });
 
-        // Tenta extrair a quantidade
         const qtyMatch = line.match(/\s(\d+)\s/);
         if (qtyMatch) qty = parseInt(qtyMatch[1]);
 
         if (foundProduct) {
-            // NOVO: Salvando a propriedade 'local' extraída do texto
             pendingDispatchList.push({ ...foundProduct, targetQty: qty, local: local });
             const div = document.createElement('div');
             div.className = "text-xs p-2 bg-white border rounded flex justify-between items-center";
@@ -1090,7 +1088,7 @@
         nome: p.nome,
         imagem: p.imagem,
         qtdSolicitada: p.targetQty,
-        local: p.local, // NOVO: Passando o local pro Firebase
+        local: p.local,
         status: 'pendente'
     }));
 
@@ -1104,7 +1102,7 @@
     loadDirecionamento();
   };
 
-  // =============== ABA DE COLETA (NOVA LÓGICA PDA E BAIXA ESTOQUE) ===============
+  // =============== ABA DE COLETA ===============
   let currentTaskItems = [];
   let currentActiveScannedItem = null;
   let activeTaskId = null;
@@ -1157,7 +1155,6 @@
                 });
             };
             
-            // NOVO: Exibindo todos os locais exclusivos dessa tarefa (Ex: RDCMG1)
             const locais = [...new Set(t.itens.map(i => i.local || 'Geral'))].join(', ');
 
             card.innerHTML = `
@@ -1186,13 +1183,9 @@
       document.getElementById('coletaTasksList').classList.add('hidden');
       document.getElementById('coletaActiveArea').classList.remove('hidden');
       renderCollectedList();
-      
-      // Auto foca no input para o PDA
       setTimeout(() => document.getElementById('collectPdaInput').focus(), 500);
   }
 
-  // NOVO: Alterado de 'input' para 'keydown' para esperar a tecla Enter do PDA.
-  // Assim o sistema lê o código inteiro e não quebra a busca no meio.
   document.getElementById('collectPdaInput').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
         e.preventDefault();
@@ -1212,7 +1205,6 @@
           } else {
               alert("Este produto não pertence a esta tarefa de coleta!");
           }
-          // Limpa o campo SOMENTE após ler o código completo e apertar Enter
           e.target.value = '';
         }
     }
@@ -1270,51 +1262,23 @@
         if(!confirm("Existem itens pendentes. Deseja finalizar assim mesmo?")) return;
     }
     
-    // NOVO: Varre a lista da tarefa para BAIXAR O ESTOQUE dos itens "Coletados"
-    for (const item of currentTaskItems) {
-        if (item.status === 'coletado') {
-            // Acha o ID real do produto no banco através do COD
-            const productEntry = Object.entries(allProducts).find(([id, p]) => p.cod === item.cod);
-            if (productEntry) {
-                const [realId, prodData] = productEntry;
-                const quantidadeRetirada = item.qtdSolicitada || 1;
-                
-                // Evitar número negativo se o estoque virtual estiver menor que o físico
-                const novaQuantidade = Math.max(0, prodData.quantidade - quantidadeRetirada);
-                
-                // Atualiza o estoque principal
-                await update(ref(db, `produtos/${realId}`), { quantidade: novaQuantidade });
-                
-                // Grava a movimentação na aba Entradas/Saídas
-                await push(movRef, {
-                    cod: item.cod,
-                    nome: item.nome,
-                    tipo: 'saida',
-                    quantidade: quantidadeRetirada,
-                    data: new Date().toISOString(),
-                    responsavel: activeCollectorName,
-                    setor: `Coleta (Local: ${item.local || 'Geral'})`
-                });
-            }
-        }
-    }
-
-    // Salva na lista de coletas finalizadas (Para aba de Conferência)
     const payload = {
       coletor: activeCollectorName,
       data: new Date().toISOString(),
       itens: currentTaskItems
     };
     await push(coletasFinRef, payload);
-    
-    // Apaga a tarefa da lista pendente
     if(activeTaskId) await remove(ref(db, `tarefas_coleta/${activeTaskId}`));
     
     alert(getTranslation('alertCollectSuccess'));
-    loadColeta(); // Reinicia a aba
+    loadColeta();
   };
 
-   // =============== CONFERÊNCIA (FLUXO IDENTIFICAÇÃO) ===============
+  // =============== CONFERÊNCIA ===============
+  let currentVerificationData = null;
+  let currentVerificationId = null;
+  let activeVerifierName = "";
+
   function loadConferencia() {
     onValue(coletasFinRef, snap => {
       const data = snap.val() || {};
@@ -1331,6 +1295,7 @@
         card.className = "bg-white p-6 rounded-xl border border-blue-100 shadow-sm hover:shadow-md cursor-pointer transition flex flex-col items-center";
         card.onclick = () => {
             showNamePrompt('verifyNamePromptTitle', 'verifyNamePromptLabel', (verifierName) => {
+                currentVerificationId = id;
                 showVerifyDetail(c, verifierName);
             });
         };
@@ -1348,6 +1313,9 @@
   }
 
   function showVerifyDetail(coleta, verifierName) {
+    currentVerificationData = coleta;
+    activeVerifierName = verifierName;
+
     document.getElementById('verifyDetailCollector').textContent = coleta.coletor;
     document.getElementById('verifyDetailDate').textContent = new Date(coleta.data).toLocaleString();
     document.getElementById('verifyDetailVerifierLabel').textContent = getTranslation('verifyVerifierLabel');
@@ -1363,7 +1331,7 @@
         <div class="flex items-center gap-3">
           <img src="${item.imagem}" class="w-8 h-8 rounded object-cover">
           <div>
-              <p class="text-[9px] text-blue-500 font-bold">${item.regiao || ""}</p>
+              <p class="text-[9px] text-blue-500 font-bold">${item.local || ""}</p>
               <p class="text-sm font-medium">${item.nome}</p>
               <p class="text-[10px] ${statusColor} font-bold">${item.status === 'coletado' ? 'COLETADO' : 'NÃO COLETADO'}</p>
           </div>
@@ -1374,6 +1342,72 @@
     });
     document.getElementById('verifyDetailModal').classList.remove('hidden');
   }
+
+  // --- NOVA FUNCIONALIDADE: EXCEL DA CONFERÊNCIA ---
+  document.getElementById('btnExportVerifyExcel').onclick = () => {
+    if (!currentVerificationData) return;
+
+    const dataExcel = currentVerificationData.itens.map(i => ({
+        "ITEM": i.nome,
+        "OBS": i.status === 'coletado' ? 'COLETADO' : 'NÃO COLETADO',
+        "QUANTIDADE": i.qtdSolicitada || 1,
+        "REGIÃO": i.local || "GERAL"
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(dataExcel);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Conferencia");
+
+    // Adiciona Rodapé para Assinaturas
+    const footerStartRow = dataExcel.length + 3;
+    XLSX.utils.sheet_add_aoa(ws, [
+        [],
+        ["Responsável pela Separação:", currentVerificationData.coletor],
+        ["Assinatura:", "_________________________________________"],
+        [],
+        ["Responsável pelo recebimento:", activeVerifierName],
+        ["Assinatura:", "_________________________________________"]
+    ], { origin: footerStartRow });
+
+    XLSX.writeFile(wb, `conferencia_${currentVerificationData.coletor}_${new Date().getTime()}.xlsx`);
+  };
+
+  // --- NOVA FUNCIONALIDADE: BAIXA DE ESTOQUE APÓS CONFERÊNCIA ---
+  document.getElementById('btnFinalizeVerification').onclick = async () => {
+    if (!currentVerificationData || !currentVerificationId) return;
+
+    if(!confirm("Isso irá descontar os itens do estoque e registrar a saída. Confirmar?")) return;
+
+    for (const item of currentVerificationData.itens) {
+        if (item.status === 'coletado') {
+            const productEntry = Object.entries(allProducts).find(([id, p]) => p.cod === item.cod);
+            if (productEntry) {
+                const [realId, prodData] = productEntry;
+                const quantidadeRetirada = item.qtdSolicitada || 1;
+                const novaQuantidade = Math.max(0, prodData.quantidade - quantidadeRetirada);
+                
+                await update(ref(db, `produtos/${realId}`), { quantidade: novaQuantidade });
+                
+                await push(movRef, {
+                    cod: item.cod,
+                    nome: item.nome,
+                    tipo: 'saida',
+                    quantidade: quantidadeRetirada,
+                    data: new Date().toISOString(),
+                    responsavel: currentVerificationData.coletor,
+                    setor: `Coleta Conferida (Local: ${item.local || 'Geral'})`
+                });
+            }
+        }
+    }
+
+    // Remove da lista de conferência pois já foi processada
+    await remove(ref(db, `coletas_finalizadas/${currentVerificationId}`));
+    
+    alert("Estoque atualizado e conferência finalizada com sucesso!");
+    document.getElementById('verifyDetailModal').classList.add('hidden');
+    loadConferencia();
+  };
 
   document.getElementById('closeVerifyModal').onclick = () => {
     document.getElementById('verifyDetailModal').classList.add('hidden');
