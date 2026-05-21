@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -37,6 +38,10 @@
       .nav-btn, header, footer, button, h2 { display: none !important; }
       .qr-printable { width: 48%; }
     }
+    /* Estilos Menu Mobile */
+    #mobileMenu { transition: transform 0.3s ease-in-out; }
+    .mobile-menu-open { transform: translateX(0); }
+    .mobile-menu-closed { transform: translateX(100%); }
   </style>
 </head>
 <body class="bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen flex flex-col">
@@ -67,28 +72,49 @@
   <div class="bg-white rounded-2xl custom-shadow overflow-hidden">
 
     <!-- Header -->
-    <header class="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6">
-      <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+    <header class="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6 relative">
+      <div class="flex justify-between items-center gap-4">
         <div class="flex items-center gap-3">
-          <img src="./img/CDC-ESTOQUE.png" alt="Logo" class="w-20 h-20 rounded-lg">
-          <h1 class="text-2xl font-bold">CDC Estoque</h1>
+          <img src="./img/CDC-ESTOQUE.png" alt="Logo" class="w-16 h-16 sm:w-20 sm:h-20 rounded-lg">
+          <h1 class="text-xl sm:text-2xl font-bold">CDC Estoque</h1>
         </div>
+        
         <div class="flex items-center gap-4">
-          <div class="relative">
-            <select id="languageSelector" class="bg-white/20 text-white rounded-lg px-3 py-2 text-sm appearance-none cursor-pointer focus:outline-none">
-              <option value="pt" class="text-black">Português</option>
-              <option value="en" class="text-black">English</option>
-              <option value="zh" class="text-black">中文 (简体)</option>
-            </select>
+          <div class="hidden lg:flex items-center gap-4">
+             <select id="languageSelector" class="bg-white/20 text-white rounded-lg px-3 py-2 text-sm appearance-none cursor-pointer focus:outline-none">
+                <option value="pt" class="text-black">Português</option>
+                <option value="en" class="text-black">English</option>
+                <option value="zh" class="text-black">中文 (简体)</option>
+              </select>
+            <nav class="flex gap-2 flex-wrap" id="desktopNav">
+                <!-- Nav buttons added via script or kept static -->
+            </nav>
+            <button id="logoutBtn" class="text-sm text-white hover:underline" data-translate="logoutBtn">Sair</button>
           </div>
-          <nav class="flex gap-2 flex-wrap">
-            <button data-page="dashboard" class="nav-btn px-4 py-2 bg-white text-blue-700 rounded-lg font-semibold text-sm" data-translate="navDashboard">Dashboard</button>
-            <button data-page="produtos" class="nav-btn px-4 py-2 hover:bg-white/20 rounded-lg font-medium text-sm" data-translate="navProducts">Produtos</button>
-            <button data-page="movimentacoes" class="nav-btn px-4 py-2 hover:bg-white/20 rounded-lg font-medium text-sm" data-translate="navMovements">Entradas/Saídas</button>
-            <button data-page="relatorios" class="nav-btn px-4 py-2 hover:bg-white/20 rounded-lg font-medium text-sm" data-translate="navReports">Relatórios</button>
-            <button data-page="qrcodes" class="nav-btn px-4 py-2 hover:bg-white/20 rounded-lg font-medium text-sm" data-translate="navQRCodes">QR Codes</button>
-          </nav>
-          <button id="logoutBtn" class="text-sm text-white hover:underline" data-translate="logoutBtn">Sair</button>
+          
+          <!-- Menu Hamburguer Button -->
+          <button id="hamburgerBtn" class="lg:hidden p-2 rounded-lg hover:bg-white/10 transition">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Menu Sidebar/Overlay -->
+      <div id="mobileMenu" class="fixed inset-y-0 right-0 w-64 bg-blue-800 shadow-2xl z-[70] transform translate-x-full lg:hidden flex flex-col p-6 transition-transform duration-300">
+        <div class="flex justify-end mb-8">
+            <button id="closeMobileMenu" class="text-white">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        <div id="mobileNavLinks" class="flex flex-col gap-4"></div>
+        <hr class="my-6 border-blue-400">
+        <div class="flex flex-col gap-4">
+            <select id="languageSelectorMobile" class="bg-blue-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none">
+                <option value="pt">Português</option>
+                <option value="en">English</option>
+                <option value="zh">中文 (简体)</option>
+            </select>
+            <button id="logoutBtnMobile" class="bg-red-500 text-white font-bold py-2 rounded-lg" data-translate="logoutBtn">Sair</button>
         </div>
       </div>
     </header>
@@ -159,8 +185,84 @@
         <div id="movimentacoesList" class="space-y-3"></div>
       </section>
 
+      <!-- Direcionamento de Coleta -->
+      <section id="direcionamento" class="page-section hidden">
+        <h2 class="text-2xl font-bold mb-6" data-translate="dispatchTitle">Direcionar Coleta</h2>
+        <div class="bg-white p-6 rounded-xl border mb-6">
+          <h3 class="font-semibold mb-2" data-translate="dispatchSubtitle">Insira a lista de produtos (Região Nome Quantidade Descrição):</h3>
+          <p class="text-xs text-gray-500 mb-4">Exemplo: RDCMG1 PILHA AA COM 8 UNIDADES 3 xxxx</p>
+          <textarea id="dispatchTextInput" class="w-full h-48 border border-gray-300 rounded-lg p-4 font-mono text-sm mb-4 focus:ring-blue-500" placeholder="Cole aqui a lista..."></textarea>
+          
+          <div id="dispatchPreviewArea" class="hidden mb-6">
+             <h4 class="font-bold text-sm mb-2 text-blue-700">Produtos Identificados:</h4>
+             <div id="dispatchPreviewList" class="space-y-2 max-h-60 overflow-y-auto p-2 border rounded-lg bg-gray-50"></div>
+          </div>
+
+          <div class="flex justify-between gap-4">
+            <button id="btnProcessDispatch" class="bg-gray-200 text-gray-800 px-6 py-2 rounded-lg font-bold">Processar Lista</button>
+            <button id="btnConfirmDispatch" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold" data-translate="dispatchConfirmBtn">Gerar Tarefa de Coleta</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Aba de Coleta -->
+      <section id="coleta" class="page-section hidden">
+        <h2 class="text-2xl font-bold mb-6" data-translate="collectTitle">Executar Coleta</h2>
+        
+        <!-- Lista de Tarefas Disponíveis -->
+        <div id="coletaTasksList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Cards de tarefas do Firebase aparecem aqui -->
+        </div>
+
+        <!-- Área de Execução -->
+        <div id="coletaActiveArea" class="hidden">
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 bg-blue-50 p-4 rounded-lg border border-blue-200">
+                <div>
+                    <p class="text-sm text-blue-600 font-semibold" data-translate="collectActiveTask">Tarefa em andamento...</p>
+                    <p id="activeCollectorDisplay" class="text-lg font-bold text-gray-800"></p>
+                </div>
+                <button id="btnFinishCollection" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-bold shadow-lg" data-translate="collectFinishBtn">Finalizar Coleta</button>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div class="lg:col-span-1 bg-white p-6 rounded-xl border">
+                <h3 class="font-semibold mb-4" data-translate="collectScannerTitle">Escanear Produto (PDA)</h3>
+                <!-- NOTA: Adicionada dica visual para usar o botão Enter no PDA -->
+                <p class="text-xs text-gray-500 mb-2">Aperte Enter após ler o código.</p>
+                <input type="text" id="collectPdaInput" class="w-full border border-gray-300 rounded-lg px-3 py-2 mb-4 focus:ring-blue-500" data-translate-placeholder="scannerInputPlaceholder">
+                
+                <!-- Card de Escaneamento Atual -->
+                <div id="collectCurrentItem" class="hidden border-t pt-4 text-center">
+                  <img id="collectImg" src="" class="w-32 h-32 object-cover mx-auto rounded-lg mb-2">
+                  <p id="collectName" class="font-bold text-gray-800"></p>
+                  <p id="collectCod" class="text-xs text-gray-500 mb-2"></p>
+                  <p id="collectLocalItem" class="text-sm text-blue-600 font-bold mb-2"></p>
+                  <div class="bg-orange-50 p-2 rounded mb-4">
+                      <p class="text-sm font-semibold text-orange-700">Qtd a Retirar: <span id="collectTargetQty" class="text-lg">0</span></p>
+                  </div>
+                  <div class="flex flex-col gap-2">
+                    <button id="btnMarkCollected" class="bg-green-600 text-white py-2 rounded-lg font-bold">COLETADO</button>
+                    <button id="btnMarkNotCollected" class="bg-red-600 text-white py-2 rounded-lg font-bold">NÃO COLETADO</button>
+                  </div>
+                </div>
+              </div>
+              <div class="lg:col-span-2 bg-white p-6 rounded-xl border">
+                <h3 class="font-semibold mb-4" data-translate="collectListTitle">Itens da Tarefa</h3>
+                <div id="collectedList" class="space-y-2"></div>
+              </div>
+            </div>
+        </div>
+      </section>
+
+      <!-- Aba Conferência -->
+      <section id="conferencia" class="page-section hidden">
+        <h2 class="text-2xl font-bold mb-6" data-translate="verifyTitle">Conferência de Coletas</h2>
+        <div id="conferenciaCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      </section>
+
       <!-- Relatórios -->
       <section id="relatorios" class="page-section hidden">
+        <!-- Manter o conteúdo original -->
         <h2 class="text-2xl font-bold mb-6" data-translate="reportsTitle">Relatórios</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <button id="gerarMovPDF" class="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-xl font-semibold text-lg hover:shadow-lg transition flex items-center justify-center gap-3">
@@ -185,6 +287,39 @@
   </div>
 </div>
 
+<!-- Modal Identificação Coletor -->
+<div id="namePromptModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-[80] p-4">
+  <div class="bg-white rounded-xl p-6 w-full max-w-sm">
+    <h3 class="text-xl font-bold mb-4" id="namePromptTitle">Identificação</h3>
+    <label class="block text-sm font-medium text-gray-700 mb-2" id="namePromptLabel">Nome do Responsável</label>
+    <input type="text" id="namePromptInput" class="w-full border border-gray-300 rounded-lg px-3 py-2 mb-4">
+    <div class="flex justify-end gap-3">
+      <button id="closeNamePrompt" class="px-4 py-2 border rounded-lg">Cancelar</button>
+      <button id="confirmNamePrompt" class="px-4 py-2 bg-blue-600 text-white rounded-lg">Iniciar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Conferência Detalhada -->
+<div id="verifyDetailModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 p-4">
+  <div class="bg-white rounded-xl p-6 w-full max-w-lg max-h-screen overflow-y-auto">
+    <div class="flex justify-between items-start mb-4">
+        <div>
+            <h3 class="text-xl font-bold" id="verifyDetailCollector"></h3>
+            <p class="text-xs text-gray-500" id="verifyDetailDate"></p>
+        </div>
+        <div class="text-right">
+            <p class="text-xs font-semibold text-blue-600" id="verifyDetailVerifierLabel">Conferente:</p>
+            <p class="text-sm font-bold" id="verifyDetailVerifierName"></p>
+        </div>
+    </div>
+    <div id="verifyDetailList" class="space-y-2 border-t pt-4"></div>
+    <div class="flex justify-end mt-6">
+      <button id="closeVerifyModal" class="px-4 py-2 bg-blue-600 text-white rounded-lg">Fechar</button>
+    </div>
+  </div>
+</div>
+
 <!-- RODAPÉ -->
 <footer class="text-center text-xs text-gray-500 py-4 px-6 bg-white border-t w-full">
   <p data-translate="footerRights">© 2025 Sistema de Controle de Estoque CDC. Todos os direitos reservados.</p>
@@ -204,6 +339,7 @@
 <!-- Modal Cadastro -->
 <div id="addModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 p-4">
   <div class="bg-white rounded-xl p-6 w-full max-w-lg max-h-screen overflow-y-auto">
+    <!-- Manter o conteúdo original -->
     <h3 class="text-xl font-bold mb-4" data-translate="addModalTitle">Cadastrar Novo Produto</h3>
     <form id="productForm">
       <div class="mb-4">
@@ -241,6 +377,7 @@
 <!-- Modal Edição -->
 <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 p-4">
   <div class="bg-white rounded-xl p-6 w-full max-w-lg max-h-screen overflow-y-auto">
+    <!-- Manter o conteúdo original -->
     <h3 class="text-xl font-bold mb-4" data-translate="editModalTitle">Editar Produto</h3>
     <form id="editProductForm">
       <input type="hidden" id="editId">
@@ -324,29 +461,36 @@
 
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js';
-  import { getDatabase, ref, push, update, remove, onValue, get, query, orderByChild, equalTo } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-database.js';
+  import { getDatabase, ref, push, update, remove, onValue, get, query, orderByChild, equalTo, set } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-database.js';
   import ACCESS_CONFIG from './info.js';
 
   const firebaseConfig = {
-    apiKey: "AIzaSyCRiN9bG96FJdOslh_nx3Apmwb8VqdXrsU",
-    authDomain: "evocortes-dfa04.firebaseapp.com",
-    databaseURL: "https://evocortes-dfa04-default-rtdb.firebaseio.com",
-    projectId: "evocortes-dfa04",
-    storageBucket: "evocortes-dfa04.firebasestorage.app",
-    messagingSenderId: "431410895933",
-    appId: "1:431410895933:web:cbe3d898e471e183bf5e54"
+    apiKey: "AIzaSyCPoCn98zQYHhsQp7oYyYC3p6pejLyCKdk",
+    authDomain: "tough-messenger-467220-h2.firebaseapp.com",
+    databaseURL: "https://tough-messenger-467220-h2-default-rtdb.firebaseio.com",
+    projectId: "tough-messenger-467220-h2",
+    storageBucket: "tough-messenger-467220-h2.firebasestorage.app",
+    messagingSenderId: "797984737364",
+    appId: "1:797984737364:web:7c9cf10ca4169e581f45c1"
   };
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
   const produtosRef = ref(db, 'produtos');
   const movRef = ref(db, 'movimentacoes');
+  const tarefasRef = ref(db, 'tarefas_coleta');
+  const coletasFinRef = ref(db, 'coletas_finalizadas');
 
-  // =============== TRADUÇÃO (i18n) ===============
+// =============== TRADUÇÃO (i18n) ===============
   const translations = {
     pt: {
       loginTitle: "Login", loginUserLabel: "Usuário", loginUserPlaceholder: "Nome do Usuário", loginPassLabel: "Senha", loginPassPlaceholder: "Senha do usuário", loginEnterBtn: "Entrar",
       navDashboard: "Dashboard", navProducts: "Produtos", navMovements: "Entradas/Saídas", navReports: "Relatórios", navQRCodes: "QR Codes", logoutBtn: "Sair",
+      navDispatch: "Direcionamento", navCollect: "Coleta", navVerify: "Conferência",
+      dispatchTitle: "Direcionar Coleta", dispatchSubtitle: "Selecione os produtos para coleta:", dispatchConfirmBtn: "Gerar Tarefa de Coleta", alertDispatchSuccess: "Tarefa de coleta enviada com sucesso!",
+      collectTitle: "Executar Coleta", collectScannerTitle: "Escanear Produto (PDA)", collectListTitle: "Itens Coletados", collectFinishBtn: "Finalizar Coleta", alertCollectSuccess: "Coleta finalizada e enviada para conferência!",
+      collectActiveTask: "Tarefa ativa de:", collectNoTasks: "Nenhuma tarefa de coleta disponível.", collectStartBtn: "Iniciar Coleta", collectNamePromptTitle: "Início de Coleta", collectNamePromptLabel: "Nome do Coletor:",
+      verifyTitle: "Conferência de Coletas", verifyNoData: "Nenhuma coleta para conferir.", verifyNamePromptTitle: "Início de Conferência", verifyNamePromptLabel: "Nome do Conferente:", verifyVerifierLabel: "Conferente:",
       dashboardTitle: "Dashboard", dashboardChartTitle: "Entradas x Saídas (Mensal)", chartLabelEntries: "Entradas", chartLabelExits: "Saídas", monthNames: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'], dashboardLowStockTitle: "Produtos com Baixo Estoque",
       productsTitle: "Lista de Produtos", productsNewBtn: "Novo Produto", productsExitBtn: "Saída de Produto", productsScanBtn: "Localizar via PDA", productsSearchLabel: "Pesquisar Produtos", productsSearchPlaceholder: "Pesquisar por nome ou COD...",
       movementsTitle: "Entradas / Saídas", movementsSearchLabel: "Pesquisar por nome do produto", movementsSearchPlaceholder: "Pesquisar por nome do produto...", filterAll: "Todas", filterEntries: "Entradas", filterExits: "Saídas", filterApplyBtn: "Filtrar", filterClearBtn: "Limpar",
@@ -364,7 +508,12 @@
     en: {
       loginTitle: "Login", loginUserLabel: "User", loginUserPlaceholder: "Username", loginPassLabel: "Password", loginPassPlaceholder: "User password", loginEnterBtn: "Enter",
       navDashboard: "Dashboard", navProducts: "Products", navMovements: "Entries/Exits", navReports: "Reports", navQRCodes: "QR Codes", logoutBtn: "Logout",
-      dashboardTitle: "Dashboard", dashboardChartTitle: "Entries vs Exits (Monthly)", chartLabelEntries: "Entries", chartLabelExits: "Exits", monthNames: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], dashboardLowStockTitle: "Low Stock Products",
+      navDispatch: "Dispatch", navCollect: "Collect", navVerify: "Verify",
+      dispatchTitle: "Dispatch Collection", dispatchSubtitle: "Select products for collection:", dispatchConfirmBtn: "Generate Collection Task", alertDispatchSuccess: "Collection task dispatched!",
+      collectTitle: "Execute Collection", collectScannerTitle: "Scan Product (PDA)", collectListTitle: "Collected Items", collectFinishBtn: "Finish Collection", alertCollectSuccess: "Collection finished and sent for verification!",
+      collectActiveTask: "Active task for:", collectNoTasks: "No collection tasks available.", collectStartBtn: "Start Collection", collectNamePromptTitle: "Start Collection", collectNamePromptLabel: "Collector Name:",
+      verifyTitle: "Collection Verification", verifyNoData: "No collections to verify.", verifyNamePromptTitle: "Start Verification", verifyNamePromptLabel: "Verifier Name:", verifyVerifierLabel: "Verifier:",
+      dashboardTitle: "Dashboard", dashboardChartTitle: "Entries vs Exits (Monthly)", chartLabelEntries: "Entries", chartLabelExits: "Exits", monthNames: ['Jan','Feb','Mar','Abr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], dashboardLowStockTitle: "Low Stock Products",
       productsTitle: "Product List", productsNewBtn: "New Product", productsExitBtn: "Product Exit", productsScanBtn: "Locate via PDA", productsSearchLabel: "Search Products", productsSearchPlaceholder: "Search by name or COD...",
       movementsTitle: "Entries / Exits", movementsSearchLabel: "Search by product name", movementsSearchPlaceholder: "Search by product name...", filterAll: "All", filterEntries: "Entries", filterExits: "Exits", filterApplyBtn: "Filter", filterClearBtn: "Clear",
       reportsTitle: "Reports", reportsMovBtn: "Movements Report", reportsStockBtn: "Current Stock Report",
@@ -381,6 +530,11 @@
     zh: {
       loginTitle: "登录", loginUserLabel: "用户", loginUserPlaceholder: "用户名", loginPassLabel: "密码", loginPassPlaceholder: "用户密码", loginEnterBtn: "进入",
       navDashboard: "仪表板", navProducts: "产品", navMovements: "出入库", navReports: "报告", navQRCodes: "二维码", logoutBtn: "登出",
+      navDispatch: "调度", navCollect: "采集", navVerify: "校验",
+      dispatchTitle: "采集调度", dispatchSubtitle: "选择要采集的产品：", dispatchConfirmBtn: "生成采集任务", alertDispatchSuccess: "采集任务已派发！",
+      collectTitle: "执行采集", collectScannerTitle: "扫描产品 (PDA)", collectListTitle: "已采集项目", collectFinishBtn: "完成采集", alertCollectSuccess: "采集已完成并送审！",
+      collectActiveTask: "当前任务来自：", collectNoTasks: "暂无待执行的采集任务。", collectStartBtn: "开始采集", collectNamePromptTitle: "采集识别", collectNamePromptLabel: "采集员姓名：",
+      verifyTitle: "采集校验", verifyNoData: "暂无待校验的采集。", verifyNamePromptTitle: "校验识别", verifyNamePromptLabel: "校验员姓名：", verifyVerifierLabel: "校验员：",
       dashboardTitle: "仪表板", dashboardChartTitle: "月度出入库对比", chartLabelEntries: "入库", chartLabelExits: "出库", monthNames: ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'], dashboardLowStockTitle: "低库存产品",
       productsTitle: "产品列表", productsNewBtn: "新产品", productsExitBtn: "产品出库", productsScanBtn: "通过PDA定位", productsSearchLabel: "搜索产品", productsSearchPlaceholder: "按名称或COD搜索...",
       movementsTitle: "出入库记录", movementsSearchLabel: "按产品名称搜索", movementsSearchPlaceholder: "按产品名称搜索...", filterAll: "全部", filterEntries: "入库", filterExits: "出库", filterApplyBtn: "筛选", filterClearBtn: "清除",
@@ -400,7 +554,7 @@
   let currentLanguage = 'pt';
 
   function getTranslation(key) {
-    return translations[currentLanguage][key] || key;
+    return translations[currentLanguage][key] || translations['pt'][key] || key;
   }
 
   function translatePage() {
@@ -412,7 +566,7 @@
       const key = el.dataset.translatePlaceholder;
       el.placeholder = getTranslation(key);
     });
-    updateUserInfo(); // Re-translate user info on language change
+    updateUserInfo();
   }
 
   function setLanguage(lang) {
@@ -420,7 +574,8 @@
       currentLanguage = lang;
       localStorage.setItem('cdcLanguage', lang);
       document.documentElement.lang = lang;
-      document.getElementById('languageSelector').value = lang;
+      const selectors = [document.getElementById('languageSelector'), document.getElementById('languageSelectorMobile')];
+      selectors.forEach(s => { if(s) s.value = lang; });
       translatePage();
       if (!mainApp.classList.contains('hidden') && !document.getElementById('dashboard').classList.contains('hidden')) {
         loadDashboard();
@@ -429,6 +584,21 @@
   }
 
   document.getElementById('languageSelector').onchange = (e) => setLanguage(e.target.value);
+  document.getElementById('languageSelectorMobile').onchange = (e) => setLanguage(e.target.value);
+
+  // =============== MENU HAMBURGUER ===============
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+  const closeMobileMenu = document.getElementById('closeMobileMenu');
+  const mobileMenu = document.getElementById('mobileMenu');
+  const mobileNavLinks = document.getElementById('mobileNavLinks');
+  const desktopNav = document.getElementById('desktopNav');
+
+  function toggleMenu() {
+    mobileMenu.classList.toggle('translate-x-full');
+  }
+
+  hamburgerBtn.onclick = toggleMenu;
+  closeMobileMenu.onclick = toggleMenu;
 
   // =============== LOGIN & SESSÃO ===============
   const loginScreen = document.getElementById('loginScreen');
@@ -460,10 +630,12 @@
     }
   };
 
-  document.getElementById('logoutBtn').onclick = () => {
+  const logoutAction = () => {
     localStorage.removeItem('cdcSession');
     location.reload();
   };
+  document.getElementById('logoutBtn').onclick = logoutAction;
+  document.getElementById('logoutBtnMobile').onclick = logoutAction;
 
   window.addEventListener('load', () => {
     const savedLang = localStorage.getItem('cdcLanguage');
@@ -483,7 +655,6 @@
 
   // =============== UI NAVEGAÇÃO E DADOS GLOBAIS ===============
   const pages = document.querySelectorAll('.page-section');
-  const navBtns = document.querySelectorAll('.nav-btn');
   const productListFull = document.getElementById('productListFull');
   const movList = document.getElementById('movimentacoesList');
   const lowStockList = document.getElementById('lowStockList');
@@ -492,17 +663,57 @@
   let allMovements = [];
   let movementsLoaded = false;
 
-  navBtns.forEach(b => b.addEventListener('click', () => {
-    pages.forEach(s => s.classList.add('hidden'));
-    document.getElementById(b.dataset.page).classList.remove('hidden');
-    navBtns.forEach(nb => nb.classList.remove('nav-active'));
-    b.classList.add('nav-active');
-    if (b.dataset.page === 'dashboard') loadDashboard();
-    if (b.dataset.page === 'movimentacoes' && !movementsLoaded) loadMovements();
-    if (b.dataset.page === 'qrcodes') loadQRCodes();
-  }));
+  const navItems = [
+    { id: 'dashboard', label: 'navDashboard' },
+    { id: 'produtos', label: 'navProducts' },
+    { id: 'movimentacoes', label: 'navMovements' },
+    { id: 'direcionamento', label: 'navDispatch' },
+    { id: 'coleta', label: 'navCollect' },
+    { id: 'conferencia', label: 'navVerify' },
+    { id: 'relatorios', label: 'navReports' },
+    { id: 'qrcodes', label: 'navQRCodes' }
+  ];
 
-  // =============== PESQUISA DE PRODUTOS ===============
+  function buildNav() {
+    desktopNav.innerHTML = '';
+    mobileNavLinks.innerHTML = '';
+    navItems.forEach(item => {
+        const btnD = document.createElement('button');
+        btnD.className = "nav-btn px-4 py-2 hover:bg-white/20 rounded-lg font-medium text-sm transition";
+        btnD.dataset.page = item.id;
+        btnD.dataset.translate = item.label;
+        btnD.textContent = getTranslation(item.label);
+        btnD.onclick = () => switchPage(item.id);
+        desktopNav.appendChild(btnD);
+
+        const btnM = document.createElement('button');
+        btnM.className = "nav-btn text-left text-white px-4 py-2 hover:bg-blue-700 rounded-lg font-medium text-lg transition";
+        btnM.dataset.page = item.id;
+        btnM.dataset.translate = item.label;
+        btnM.textContent = getTranslation(item.label);
+        btnM.onclick = () => { switchPage(item.id); toggleMenu(); };
+        mobileNavLinks.appendChild(btnM);
+    });
+  }
+
+  function switchPage(pageId) {
+    pages.forEach(s => s.classList.add('hidden'));
+    document.getElementById(pageId).classList.remove('hidden');
+    document.querySelectorAll('.nav-btn').forEach(nb => {
+        if(nb.dataset.page === pageId) nb.classList.add('nav-active');
+        else nb.classList.remove('nav-active');
+    });
+    if (pageId === 'dashboard') loadDashboard();
+    if (pageId === 'movimentacoes' && !movementsLoaded) loadMovements();
+    if (pageId === 'qrcodes') loadQRCodes();
+    if (pageId === 'direcionamento') loadDirecionamento();
+    if (pageId === 'coleta') loadColeta();
+    if (pageId === 'conferencia') loadConferencia();
+  }
+  
+  buildNav();
+
+     // =============== PESQUISA DE PRODUTOS ===============
   const productSearchInput = document.getElementById('productSearchInput');
   productSearchInput.addEventListener('input', () => {
       const searchTerm = productSearchInput.value.toLowerCase().trim();
@@ -514,8 +725,7 @@
       );
       renderProdutos(productListFull, filteredProducts);
   });
-
-  // =============== GERAÇÃO DE COD AUTOMÁTICO ===============
+    // =============== GERAÇÃO DE COD AUTOMÁTICO ===============
   async function generateUniqueCOD() {
     const chars = '0123456789';
     let cod = '';
@@ -609,7 +819,7 @@
       resetCam();
     } catch (error) {
       console.error("Erro ao salvar produto:", error);
-      alert("Ocorreu um erro ao salvar o produto. Tente novamente.");
+      alert("Ocorreu um erro ao salvar the produto. Tente novamente.");
     }
   };
 
@@ -813,6 +1023,359 @@
       document.getElementById('filterDataFim').value = '';
       document.getElementById('movimentacaoSearchInput').value = '';
       renderMov(allMovements);
+  };
+
+  // =============== DIRECIONAMENTO DE COLETA (COM LOCAL) ===============
+  let pendingDispatchList = [];
+
+  function loadDirecionamento() {
+      document.getElementById('dispatchTextInput').value = '';
+      document.getElementById('dispatchPreviewArea').classList.add('hidden');
+      pendingDispatchList = [];
+  }
+
+  document.getElementById('btnProcessDispatch').onclick = () => {
+    const rawText = document.getElementById('dispatchTextInput').value;
+    const lines = rawText.split('\n').filter(l => l.trim() !== '');
+    const previewList = document.getElementById('dispatchPreviewList');
+    previewList.innerHTML = '';
+    pendingDispatchList = [];
+
+    lines.forEach(line => {
+        const lineLower = line.toLowerCase();
+        let foundProduct = null;
+        let qty = 1;
+        
+        // NOVO: Capturando a primeira palavra da linha como Local (ex: RDCMG1)
+        const parts = line.trim().split(/\s+/);
+        const local = parts.length > 0 ? parts[0].toUpperCase() : "GERAL";
+
+        // Tenta encontrar o melhor match de nome
+        Object.values(allProducts).forEach(p => {
+            if (lineLower.includes(p.nome.toLowerCase())) {
+                foundProduct = p;
+            }
+        });
+
+        // Tenta extrair a quantidade
+        const qtyMatch = line.match(/\s(\d+)\s/);
+        if (qtyMatch) qty = parseInt(qtyMatch[1]);
+
+        if (foundProduct) {
+            // NOVO: Salvando a propriedade 'local' extraída do texto
+            pendingDispatchList.push({ ...foundProduct, targetQty: qty, local: local });
+            const div = document.createElement('div');
+            div.className = "text-xs p-2 bg-white border rounded flex justify-between items-center";
+            div.innerHTML = `<span><strong>${foundProduct.nome}</strong> (Qtd: ${qty}) - Local: ${local}</span> <span class="text-green-600 font-bold">Localizado</span>`;
+            previewList.appendChild(div);
+        } else {
+            const div = document.createElement('div');
+            div.className = "text-xs p-2 bg-red-50 border border-red-200 rounded flex justify-between items-center";
+            div.innerHTML = `<span>"${line.substring(0, 30)}..."</span> <span class="text-red-600 font-bold">Não encontrado</span>`;
+            previewList.appendChild(div);
+        }
+    });
+
+    if (pendingDispatchList.length > 0) {
+        document.getElementById('dispatchPreviewArea').classList.remove('hidden');
+    }
+  };
+
+  document.getElementById('btnConfirmDispatch').onclick = async () => {
+    if (pendingDispatchList.length === 0) return alert("Processe a lista primeiro e verifique os produtos.");
+
+    const itemsToSave = pendingDispatchList.map(p => ({
+        cod: p.cod,
+        nome: p.nome,
+        imagem: p.imagem,
+        qtdSolicitada: p.targetQty,
+        local: p.local, // NOVO: Passando o local pro Firebase
+        status: 'pendente'
+    }));
+
+    await push(tarefasRef, { 
+      data: new Date().toISOString(), 
+      criadoPor: currentUser.username, 
+      itens: itemsToSave 
+    });
+    
+    alert(getTranslation('alertDispatchSuccess'));
+    loadDirecionamento();
+  };
+
+  // =============== ABA DE COLETA (NOVA LÓGICA PDA E BAIXA ESTOQUE) ===============
+  let currentTaskItems = [];
+  let currentActiveScannedItem = null;
+  let activeTaskId = null;
+  let activeCollectorName = "";
+
+  const namePromptModal = document.getElementById('namePromptModal');
+  const namePromptInput = document.getElementById('namePromptInput');
+  const confirmNamePrompt = document.getElementById('confirmNamePrompt');
+  const closeNamePrompt = document.getElementById('closeNamePrompt');
+  let namePromptCallback = null;
+
+  function showNamePrompt(titleKey, labelKey, callback) {
+      document.getElementById('namePromptTitle').textContent = getTranslation(titleKey);
+      document.getElementById('namePromptLabel').textContent = getTranslation(labelKey);
+      namePromptInput.value = "";
+      namePromptModal.classList.remove('hidden');
+      namePromptCallback = callback;
+  }
+
+  confirmNamePrompt.onclick = () => {
+      const name = namePromptInput.value.trim();
+      if(!name) return;
+      namePromptModal.classList.add('hidden');
+      if(namePromptCallback) namePromptCallback(name);
+  };
+  closeNamePrompt.onclick = () => namePromptModal.classList.add('hidden');
+
+  function loadColeta() {
+    activeTaskId = null;
+    currentTaskItems = [];
+    document.getElementById('coletaTasksList').classList.remove('hidden');
+    document.getElementById('coletaActiveArea').classList.add('hidden');
+    
+    onValue(tarefasRef, snap => {
+        const data = snap.val() || {};
+        const container = document.getElementById('coletaTasksList');
+        container.innerHTML = '';
+
+        if (Object.keys(data).length === 0) {
+            container.innerHTML = `<p class="col-span-full text-center text-gray-500 py-10">${getTranslation('collectNoTasks')}</p>`;
+            return;
+        }
+
+        Object.entries(data).forEach(([id, t]) => {
+            const card = document.createElement('div');
+            card.className = "bg-white p-6 rounded-xl border border-blue-100 shadow-sm hover:shadow-md transition cursor-pointer";
+            card.onclick = () => {
+                showNamePrompt('collectNamePromptTitle', 'collectNamePromptLabel', (name) => {
+                    startTask(id, t, name);
+                });
+            };
+            
+            // NOVO: Exibindo todos os locais exclusivos dessa tarefa (Ex: RDCMG1)
+            const locais = [...new Set(t.itens.map(i => i.local || 'Geral'))].join(', ');
+
+            card.innerHTML = `
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="p-3 bg-blue-100 text-blue-600 rounded-lg">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012-2"></path></svg>
+                    </div>
+                    <div>
+                        <p class="font-bold text-blue-700 text-sm mb-1">Local: ${locais}</p>
+                        <p class="text-xs text-gray-500">Solicitado por: ${t.criadoPor}</p>
+                        <p class="font-bold text-gray-800">${t.itens.length} itens na lista</p>
+                    </div>
+                </div>
+                <button class="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold text-sm">${getTranslation('collectStartBtn')}</button>
+            `;
+            container.appendChild(card);
+        });
+    });
+  }
+
+  function startTask(id, task, collectorName) {
+      activeTaskId = id;
+      activeCollectorName = collectorName;
+      currentTaskItems = task.itens;
+      document.getElementById('activeCollectorDisplay').textContent = collectorName;
+      document.getElementById('coletaTasksList').classList.add('hidden');
+      document.getElementById('coletaActiveArea').classList.remove('hidden');
+      renderCollectedList();
+      
+      // Auto foca no input para o PDA
+      setTimeout(() => document.getElementById('collectPdaInput').focus(), 500);
+  }
+
+  // NOVO: Alterado de 'input' para 'keydown' para esperar a tecla Enter do PDA.
+  // Assim o sistema lê o código inteiro e não quebra a busca no meio.
+  document.getElementById('collectPdaInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        const code = e.target.value.trim();
+        
+        if (code) {
+          const itemInTask = currentTaskItems.find(i => i.cod === code);
+          if (itemInTask) {
+            currentActiveScannedItem = itemInTask;
+            document.getElementById('collectImg').src = itemInTask.imagem;
+            document.getElementById('collectName').textContent = itemInTask.nome;
+            document.getElementById('collectCod').textContent = itemInTask.cod;
+            document.getElementById('collectLocalItem').textContent = "Local: " + (itemInTask.local || 'Geral');
+            document.getElementById('collectTargetQty').textContent = itemInTask.qtdSolicitada || 1;
+            document.getElementById('collectCurrentItem').classList.remove('hidden');
+            navigator.vibrate && navigator.vibrate(100);
+          } else {
+              alert("Este produto não pertence a esta tarefa de coleta!");
+          }
+          // Limpa o campo SOMENTE após ler o código completo e apertar Enter
+          e.target.value = '';
+        }
+    }
+  });
+
+  document.getElementById('btnMarkCollected').onclick = () => {
+    if (!currentActiveScannedItem) return;
+    currentActiveScannedItem.status = 'coletado';
+    renderCollectedList();
+    document.getElementById('collectCurrentItem').classList.add('hidden');
+    currentActiveScannedItem = null;
+    document.getElementById('collectPdaInput').focus();
+  };
+
+  document.getElementById('btnMarkNotCollected').onclick = () => {
+    if (!currentActiveScannedItem) return;
+    currentActiveScannedItem.status = 'nao_coletado';
+    renderCollectedList();
+    document.getElementById('collectCurrentItem').classList.add('hidden');
+    currentActiveScannedItem = null;
+    document.getElementById('collectPdaInput').focus();
+  };
+
+  function renderCollectedList() {
+    const list = document.getElementById('collectedList');
+    list.innerHTML = '';
+    currentTaskItems.forEach((item) => {
+      const div = document.createElement('div');
+      
+      let bgColor = "bg-white";
+      let statusText = "Pendente";
+      if(item.status === 'coletado') { bgColor = "bg-green-100 border-green-300"; statusText = "Coletado"; }
+      if(item.status === 'nao_coletado') { bgColor = "bg-red-100 border-red-300"; statusText = "Não Coletado"; }
+
+      div.className = `flex justify-between items-center p-3 border rounded-lg shadow-sm transition ${bgColor}`;
+      div.innerHTML = `
+        <div class="flex items-center gap-3">
+          <img src="${item.imagem}" class="w-10 h-10 object-cover rounded">
+          <div>
+              <p class="font-medium text-sm">${item.nome}</p>
+              <p class="text-[10px] uppercase font-bold opacity-70">${statusText} | LOCAL: ${item.local || 'GERAL'}</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-4">
+          <span class="text-blue-700 px-3 py-1 rounded-full font-bold">Qtd: ${item.qtdSolicitada || 1}</span>
+        </div>
+      `;
+      list.appendChild(div);
+    });
+  }
+
+  document.getElementById('btnFinishCollection').onclick = async () => {
+    const unfinished = currentTaskItems.filter(i => i.status === 'pendente');
+    if (unfinished.length > 0) {
+        if(!confirm("Existem itens pendentes. Deseja finalizar assim mesmo?")) return;
+    }
+    
+    // NOVO: Varre a lista da tarefa para BAIXAR O ESTOQUE dos itens "Coletados"
+    for (const item of currentTaskItems) {
+        if (item.status === 'coletado') {
+            // Acha o ID real do produto no banco através do COD
+            const productEntry = Object.entries(allProducts).find(([id, p]) => p.cod === item.cod);
+            if (productEntry) {
+                const [realId, prodData] = productEntry;
+                const quantidadeRetirada = item.qtdSolicitada || 1;
+                
+                // Evitar número negativo se o estoque virtual estiver menor que o físico
+                const novaQuantidade = Math.max(0, prodData.quantidade - quantidadeRetirada);
+                
+                // Atualiza o estoque principal
+                await update(ref(db, `produtos/${realId}`), { quantidade: novaQuantidade });
+                
+                // Grava a movimentação na aba Entradas/Saídas
+                await push(movRef, {
+                    cod: item.cod,
+                    nome: item.nome,
+                    tipo: 'saida',
+                    quantidade: quantidadeRetirada,
+                    data: new Date().toISOString(),
+                    responsavel: activeCollectorName,
+                    setor: `Coleta (Local: ${item.local || 'Geral'})`
+                });
+            }
+        }
+    }
+
+    // Salva na lista de coletas finalizadas (Para aba de Conferência)
+    const payload = {
+      coletor: activeCollectorName,
+      data: new Date().toISOString(),
+      itens: currentTaskItems
+    };
+    await push(coletasFinRef, payload);
+    
+    // Apaga a tarefa da lista pendente
+    if(activeTaskId) await remove(ref(db, `tarefas_coleta/${activeTaskId}`));
+    
+    alert(getTranslation('alertCollectSuccess'));
+    loadColeta(); // Reinicia a aba
+  };
+
+   // =============== CONFERÊNCIA (FLUXO IDENTIFICAÇÃO) ===============
+  function loadConferencia() {
+    onValue(coletasFinRef, snap => {
+      const data = snap.val() || {};
+      const container = document.getElementById('conferenciaCards');
+      container.innerHTML = '';
+
+      if (Object.keys(data).length === 0) {
+        container.innerHTML = `<p class="col-span-full text-center text-gray-500 py-10">${getTranslation('verifyNoData')}</p>`;
+        return;
+      }
+
+      Object.entries(data).reverse().forEach(([id, c]) => {
+        const card = document.createElement('div');
+        card.className = "bg-white p-6 rounded-xl border border-blue-100 shadow-sm hover:shadow-md cursor-pointer transition flex flex-col items-center";
+        card.onclick = () => {
+            showNamePrompt('verifyNamePromptTitle', 'verifyNamePromptLabel', (verifierName) => {
+                showVerifyDetail(c, verifierName);
+            });
+        };
+        card.innerHTML = `
+          <div class="w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center text-2xl font-bold mb-4">
+            ${c.coletor.charAt(0).toUpperCase()}
+          </div>
+          <h3 class="font-bold text-lg text-gray-800">${c.coletor}</h3>
+          <p class="text-xs text-gray-500">${new Date(c.data).toLocaleString()}</p>
+          <p class="mt-2 text-sm text-blue-600 font-semibold">${c.itens.length} itens coletados</p>
+        `;
+        container.appendChild(card);
+      });
+    });
+  }
+
+  function showVerifyDetail(coleta, verifierName) {
+    document.getElementById('verifyDetailCollector').textContent = coleta.coletor;
+    document.getElementById('verifyDetailDate').textContent = new Date(coleta.data).toLocaleString();
+    document.getElementById('verifyDetailVerifierLabel').textContent = getTranslation('verifyVerifierLabel');
+    document.getElementById('verifyDetailVerifierName').textContent = verifierName;
+    
+    const list = document.getElementById('verifyDetailList');
+    list.innerHTML = '';
+    coleta.itens.forEach(item => {
+      const div = document.createElement('div');
+      const statusColor = item.status === 'coletado' ? 'text-green-600' : 'text-red-600';
+      div.className = "flex justify-between items-center p-2 border-b";
+      div.innerHTML = `
+        <div class="flex items-center gap-3">
+          <img src="${item.imagem}" class="w-8 h-8 rounded object-cover">
+          <div>
+              <p class="text-[9px] text-blue-500 font-bold">${item.regiao || ""}</p>
+              <p class="text-sm font-medium">${item.nome}</p>
+              <p class="text-[10px] ${statusColor} font-bold">${item.status === 'coletado' ? 'COLETADO' : 'NÃO COLETADO'}</p>
+          </div>
+        </div>
+        <span class="font-bold text-blue-700">${item.qtdSolicitada || 1} un</span>
+      `;
+      list.appendChild(div);
+    });
+    document.getElementById('verifyDetailModal').classList.remove('hidden');
+  }
+
+  document.getElementById('closeVerifyModal').onclick = () => {
+    document.getElementById('verifyDetailModal').classList.add('hidden');
   };
 
   // =============== SAÍDA DE PRODUTO ===============
@@ -1041,8 +1604,9 @@
             loadDashboard();
         }
     });
-    document.querySelector('[data-page="dashboard"]').click();
+    switchPage('dashboard');
   }
+
 </script>
 </body>
 </html>
