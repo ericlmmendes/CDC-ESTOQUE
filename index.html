@@ -14,6 +14,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <!-- Biblioteca para Excel -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style/dist/xlsx.bundle.js"></script>
   <style>
     body {font-family:'Poppins',sans-serif; display:flex; flex-direction:column; min-height:100vh; margin:0;}
     .custom-shadow{box-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -2px rgba(0,0,0,.05);}
@@ -278,8 +279,14 @@
       <!-- QR Codes -->
       <section id="qrcodes" class="page-section hidden">
         <h2 class="text-2xl font-bold mb-6" data-translate="qrCodesTitle">Gerar QR Codes</h2>
-        <button id="generateQRCodes" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-3 rounded-lg mb-6" data-translate="qrCodesPrintBtn">Imprimir QR Codes</button>
-        <div id="qrCodeList" class="grid grid-cols-2 gap-6"></div>
+        
+        <!-- NOVO: Barra de pesquisa e botão organizados -->
+        <div class="flex flex-col sm:flex-row gap-4 mb-6 items-center">
+          <input type="search" id="qrCodeSearchInput" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Pesquisar produto por nome para imprimir...">
+          <button id="generateQRCodes" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg whitespace-nowrap" data-translate="qrCodesPrintBtn">Imprimir QR Codes</button>
+        </div>
+
+        <div id="qrCodeList" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6"></div>
       </section>
 
     </main>
@@ -466,17 +473,15 @@
   import { getDatabase, ref, push, update, remove, onValue, get, query, orderByChild, equalTo, set } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-database.js';
   import ACCESS_CONFIG from './info.js';
 
-  // Configuração do Firebase
-const firebaseConfig = {
-  apiKey: "AIzaSyCRiN9bG96FJdOslh_nx3Apmwb8VqdXrsU",
-  authDomain: "evocortes-dfa04.firebaseapp.com",
-  databaseURL: "https://evocortes-dfa04-default-rtdb.firebaseio.com",
-  projectId: "evocortes-dfa04",
-  storageBucket: "evocortes-dfa04.firebasestorage.app",
-  messagingSenderId: "431410895933",
-  appId: "1:431410895933:web:cbe3d898e471e183bf5e54",
-  measurementId: "G-KEMS99F9L3"
-};
+  const firebaseConfig = {
+    apiKey: "AIzaSyCPoCn98zQYHhsQp7oYyYC3p6pejLyCKdk",
+    authDomain: "tough-messenger-467220-h2.firebaseapp.com",
+    databaseURL: "https://tough-messenger-467220-h2-default-rtdb.firebaseio.com",
+    projectId: "tough-messenger-467220-h2",
+    storageBucket: "tough-messenger-467220-h2.firebasestorage.app",
+    messagingSenderId: "797984737364",
+    appId: "1:797984737364:web:7c9cf10ca4169e581f45c1"
+  };
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
@@ -1345,34 +1350,185 @@ const firebaseConfig = {
     document.getElementById('verifyDetailModal').classList.remove('hidden');
   }
 
-  // --- NOVA FUNCIONALIDADE: EXCEL DA CONFERÊNCIA ---
   document.getElementById('btnExportVerifyExcel').onclick = () => {
     if (!currentVerificationData) return;
 
-    const dataExcel = currentVerificationData.itens.map(i => ({
-        "ITEM": i.nome,
-        "OBS": i.status === 'coletado' ? 'COLETADO' : 'NÃO COLETADO',
-        "QUANTIDADE": i.qtdSolicitada || 1,
-        "REGIÃO": i.local || "GERAL"
-    }));
-
-    const ws = XLSX.utils.json_to_sheet(dataExcel);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Conferencia");
 
-    // Adiciona Rodapé para Assinaturas
-    const footerStartRow = dataExcel.length + 3;
-    XLSX.utils.sheet_add_aoa(ws, [
-        [],
-        ["Responsável pela Separação:", currentVerificationData.coletor],
-        ["Assinatura:", "_________________________________________"],
-        [],
-        ["Responsável pelo recebimento:", activeVerifierName],
-        ["Assinatura:", "_________________________________________"]
-    ], { origin: footerStartRow });
+    // Dados da tabela
+    const data = [
+        ["ITEM", "OBS", "QUANTIDADE", "REGIÃO"],
+        ...currentVerificationData.itens.map(i => [
+            i.nome,
+            i.status === 'coletado' ? 'COLETADO' : 'NÃO COLETADO',
+            i.qtdSolicitada || 1,
+            i.local || "GERAL"
+        ])
+    ];
 
-    XLSX.writeFile(wb, `conferencia_${currentVerificationData.coletor}_${new Date().getTime()}.xlsx`);
-  };
+    // Espaços até assinatura
+    data.push([]);
+    data.push([]);
+    data.push([]);
+
+    // Rodapé
+    data.push([
+        "Responsável pela Separação:",
+        currentVerificationData.coletor
+    ]);
+    data.push([
+        "Responsável pelo Conferencia:",
+        activeVerifierName,
+        "",
+        
+    ]);
+
+    data.push([
+        "Assinatura:",
+        "_________________________________________________"
+    ]);
+
+    data.push([]);
+
+    data.push([
+        "Responsável pelo recebimento:"
+    ]);
+
+    data.push([
+        "Assinatura:",
+        "__________________________________________________",
+        "",
+        `Data: ${new Date().toLocaleDateString()}`
+    ]);
+
+    // Cria planilha
+    const ws = XLSX.utils.aoa_to_sheet(data);
+
+    // Largura das colunas
+    ws['!cols'] = [
+        { wch: 35 }, // ITEM
+        { wch: 55 }, // OBS
+        { wch: 15 }, // QUANTIDADE
+        { wch: 20 }  // REGIÃO
+    ];
+
+    // Estilo do cabeçalho
+    const headerStyle = {
+    font: {
+        bold: true,
+        color: { rgb: "FFFFFF" } // Branco
+    },
+    fill: {
+        patternType: "solid",
+        fgColor: { rgb: "000000" } // Preto
+    },
+    alignment: {
+        horizontal: "center",
+        vertical: "center"
+    },
+    border: {
+        top: { style: "thin", color: { rgb: "000000" } },
+        bottom: { style: "thin", color: { rgb: "000000" } },
+        left: { style: "thin", color: { rgb: "000000" } },
+        right: { style: "thin", color: { rgb: "000000" } }
+    }
+};
+
+
+    // Estilo padrão das células
+    const cellStyle = {
+        border: {
+            top: { style: "thin", color: { rgb: "CCCCCC" } },
+            bottom: { style: "thin", color: { rgb: "CCCCCC" } },
+            left: { style: "thin", color: { rgb: "CCCCCC" } },
+            right: { style: "thin", color: { rgb: "CCCCCC" } }
+        },
+        alignment: {
+            vertical: "center"
+        }
+    };
+
+    const borderStyle = {
+    top: { style: "thin", color: { rgb: "BFBFBF" } },
+    bottom: { style: "thin", color: { rgb: "BFBFBF" } },
+    left: { style: "thin", color: { rgb: "BFBFBF" } },
+    right: { style: "thin", color: { rgb: "BFBFBF" } }
+};
+
+    // Aplica estilo no cabeçalho
+    ["A1", "B1", "C1", "D1"].forEach(cell => {
+    if (ws[cell]) {
+        ws[cell].s = headerStyle;
+    }
+});
+
+    // Aplica estilo nas demais células
+    const range = XLSX.utils.decode_range(ws['!ref']);
+
+for (let R = range.s.r; R <= range.e.r; ++R) {
+    for (let C = range.s.c; C <= range.e.c; ++C) {
+
+        const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
+
+        // cria célula vazia se não existir
+        if (!ws[cellAddress]) {
+            ws[cellAddress] = {
+                t: "s",
+                v: ""
+            };
+        }
+
+        // Cabeçalho
+        if (R === 0) {
+            ws[cellAddress].s = {
+                font: {
+                    bold: true,
+                    color: { rgb: "FFFFFF" }
+                },
+                fill: {
+                    patternType: "solid",
+                    fgColor: { rgb: "000000" }
+                },
+                alignment: {
+                    horizontal: "center",
+                    vertical: "center"
+                },
+                border: borderStyle
+            };
+        } else {
+
+            // Demais células
+            ws[cellAddress].s = {
+             border: borderStyle,
+             alignment: {
+             vertical: "center"
+           }
+           };
+
+            // Centraliza coluna C
+        if (C === 2) {
+           ws[cellAddress].s.alignment = {
+           horizontal: "center",
+           vertical: "center"
+           };
+          }
+        
+        }
+    }
+}
+
+    // Altura das linhas
+    ws['!rows'] = data.map(() => ({ hpt: 22 }));
+
+    
+
+    XLSX.utils.book_append_sheet(wb, ws, "Conferência");
+
+    XLSX.writeFile(
+        wb,
+        `conferencia_${currentVerificationData.coletor}_${Date.now()}.xlsx`
+    );
+};
 
   // --- NOVA FUNCIONALIDADE: BAIXA DE ESTOQUE APÓS CONFERÊNCIA ---
   document.getElementById('btnFinalizeVerification').onclick = async () => {
@@ -1565,16 +1721,37 @@ const firebaseConfig = {
   };
 
   // =============== QR CODES ===============
-  function loadQRCodes() {
+  function loadQRCodes(searchTerm = '') {
     qrCodeList.innerHTML = '';
+    const term = searchTerm.toLowerCase().trim();
+
     Object.values(allProducts).forEach(p => {
+      // Filtra pelo nome do produto: se existir um termo e não bater com o nome, pula a renderização
+      if (term && !p.nome.toLowerCase().includes(term)) {
+        return;
+      }
+
       const div = document.createElement('div');
-      div.className = 'qr-printable';
-      div.innerHTML = `<div id="qrcode-${p.cod}" class="inline-block"></div><p class="text-sm font-medium">${p.nome} (${p.cod})</p>`;
+      // Adicionado um pequeno estilo visual na tela (borda e fundo) que não afeta a impressão
+      div.className = 'qr-printable bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col items-center';
+      div.innerHTML = `
+        <div id="qrcode-${p.cod}" class="inline-block mb-2"></div>
+        <p class="text-sm font-bold text-gray-800 text-center">${p.nome}</p>
+        <p class="text-xs text-gray-500 text-center">COD: ${p.cod}</p>
+      `;
       qrCodeList.appendChild(div);
       new QRCode(document.getElementById(`qrcode-${p.cod}`), { text: p.cod, width: 100, height: 100 });
     });
   }
+
+  // Evento para atualizar a lista de QR Codes enquanto o usuário digita
+  const qrCodeSearchInput = document.getElementById('qrCodeSearchInput');
+  if(qrCodeSearchInput) {
+    qrCodeSearchInput.addEventListener('input', (e) => {
+      loadQRCodes(e.target.value);
+    });
+  }
+
   document.getElementById('generateQRCodes').onclick = () => window.print();
 
   // =============== SCANNER ===============
