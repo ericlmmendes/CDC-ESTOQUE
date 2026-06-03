@@ -149,6 +149,10 @@
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"/></svg>
               <span data-translate="productsNewBtn">Novo Produto</span>
             </button>
+            <button id="openImportModal" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2 text-sm">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                <span data-translate="productsImportBtn">Importar Planilha</span>
+            </button>
             <button id="openSaidaModal" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2 text-sm">
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" clip-rule="evenodd" /></svg>
               <span data-translate="productsExitBtn">Saída de Produto</span>
@@ -347,6 +351,25 @@
   </div>
 </div>
 
+<!-- Modal Importação -->
+<div id="importModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 p-4">
+    <div class="bg-white rounded-xl p-6 w-full max-w-md">
+      <h3 class="text-xl font-bold mb-4" data-translate="importModalTitle">Importar Pedidos em Massa</h3>
+      <p class="text-sm text-gray-600 mb-4" data-translate="importModalText">Anexe uma planilha (XLSX/CSV) com as colunas: <b>PEDIDO, DESCRIÇÃO PRODUTO/SERVIÇO, QTDE., PO</b></p>
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Selecionar Arquivo</label>
+        <input type="file" id="importFileInput" accept=".xlsx, .xls, .csv" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+      </div>
+      <div class="flex flex-col gap-3">
+        <button id="btnDownloadTemplate" class="text-blue-600 text-xs font-bold hover:underline text-left">Baixar Planilha Modelo</button>
+        <div class="flex justify-end gap-3">
+            <button type="button" id="closeImportModal" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700" data-translate="formCancel">Cancelar</button>
+            <button type="button" id="btnProcessImport" class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold" data-translate="importModalBtn">Processar e Cadastrar</button>
+        </div>
+      </div>
+    </div>
+</div>
+
 <!-- Modal Cadastro -->
 <div id="addModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 p-4">
   <div class="bg-white rounded-xl p-6 w-full max-w-lg max-h-screen overflow-y-auto">
@@ -474,14 +497,13 @@
   import ACCESS_CONFIG from './info.js';
 
   const firebaseConfig = {
-  apiKey: "AIzaSyCRiN9bG96FJdOslh_nx3Apmwb8VqdXrsU",
-  authDomain: "evocortes-dfa04.firebaseapp.com",
-  databaseURL: "https://evocortes-dfa04-default-rtdb.firebaseio.com",
-  projectId: "evocortes-dfa04",
-  storageBucket: "evocortes-dfa04.firebasestorage.app",
-  messagingSenderId: "431410895933",
-  appId: "1:431410895933:web:cbe3d898e471e183bf5e54",
-  measurementId: "G-KEMS99F9L3"
+  apiKey: "AIzaSyCPoCn98zQYHhsQp7oYyYC3p6pejLyCKdk",
+  authDomain: "tough-messenger-467220-h2.firebaseapp.com",
+  databaseURL: "https://tough-messenger-467220-h2-default-rtdb.firebaseio.com",
+  projectId: "tough-messenger-467220-h2",
+  storageBucket: "tough-messenger-467220-h2.firebasestorage.app",
+  messagingSenderId: "797984737364",
+  appId: "1:797984737364:web:7c9cf10ca4169e581f45c1"
 };
 
   const app = initializeApp(firebaseConfig);
@@ -502,7 +524,7 @@
       collectActiveTask: "Tarefa ativa de:", collectNoTasks: "Nenhuma tarefa de coleta disponível.", collectStartBtn: "Iniciar Coleta", collectNamePromptTitle: "Início de Coleta", collectNamePromptLabel: "Nome do Coletor:",
       verifyTitle: "Conferência de Coletas", verifyNoData: "Nenhuma coleta para conferir.", verifyNamePromptTitle: "Início de Conferência", verifyNamePromptLabel: "Nome do Conferente:", verifyVerifierLabel: "Conferente:",
       dashboardTitle: "Dashboard", dashboardChartTitle: "Entradas x Saídas (Mensal)", chartLabelEntries: "Entradas", chartLabelExits: "Saídas", monthNames: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'], dashboardLowStockTitle: "Produtos com Baixo Estoque",
-      productsTitle: "Lista de Produtos", productsNewBtn: "Novo Produto", productsExitBtn: "Saída de Produto", productsScanBtn: "Localizar via PDA", productsSearchLabel: "Pesquisar Produtos", productsSearchPlaceholder: "Pesquisar por nome ou COD...",
+      productsTitle: "Lista de Produtos", productsNewBtn: "Novo Produto", productsImportBtn: "Importar Planilha", productsExitBtn: "Saída de Produto", productsScanBtn: "Localizar via PDA", productsSearchLabel: "Pesquisar Produtos", productsSearchPlaceholder: "Pesquisar por nome ou COD...",
       movementsTitle: "Entradas / Saídas", movementsSearchLabel: "Pesquisar por nome do produto", movementsSearchPlaceholder: "Pesquisar por nome do produto...", filterAll: "Todas", filterEntries: "Entradas", filterExits: "Saídas", filterApplyBtn: "Filtrar", filterClearBtn: "Limpar",
       reportsTitle: "Relatórios", reportsMovBtn: "Relatório de Movimentações", reportsStockBtn: "Relatório de Estoque Atual",
       qrCodesTitle: "Gerar QR Codes", qrCodesPrintBtn: "Imprimir QR Codes",
@@ -514,6 +536,7 @@
       alertAccessDenied: "Acesso negado: Apenas administradores e operadores podem realizar esta ação.", alertSaveSuccess: "Produto salvo com sucesso!", alertUpdateSuccess: "Produto atualizado!", alertDeleteSuccess: "Produto excluído!", alertExitSuccess: "Saída registrada com sucesso!", alertEntrySuccess: "Entrada registrada com sucesso!", alertProductNotFound: "Produto não encontrado com o código fornecido.", alertInsufficientStock: "Estoque insuficiente.", alertFillAllFields: "Preencha todos os campos corretamente.", alertConfirmDelete: "Deseja realmente excluir este produto?",
       renderEditBtn: "Editar", renderNoProducts: "Nenhum produto encontrado.", renderLoadingMovements: "Carregando movimentações...", renderErrorMovements: "Ocorreu um erro ao carregar os dados.", renderNoMovements: "Nenhuma movimentação encontrada para os filtros aplicados.", selectProductPlaceholder: "Selecione um produto...",
       userInfoGreeting: "Bem-vindo(a)",
+      importModalTitle: "Importar Pedidos em Massa", importModalText: "Anexe uma planilha (XLSX/CSV) com as colunas: PEDIDO, DESCRIÇÃO PRODUTO/SERVIÇO, QTDE., PO", importModalBtn: "Processar e Cadastrar", alertImportSuccess: "Importação concluída com sucesso!"
     },
     en: {
       loginTitle: "Login", loginUserLabel: "User", loginUserPlaceholder: "Username", loginPassLabel: "Password", loginPassPlaceholder: "User password", loginEnterBtn: "Enter",
@@ -524,7 +547,7 @@
       collectActiveTask: "Active task for:", collectNoTasks: "No collection tasks available.", collectStartBtn: "Start Collection", collectNamePromptTitle: "Start Collection", collectNamePromptLabel: "Collector Name:",
       verifyTitle: "Collection Verification", verifyNoData: "No collections to verify.", verifyNamePromptTitle: "Start Verification", verifyNamePromptLabel: "Verifier Name:", verifyVerifierLabel: "Verifier:",
       dashboardTitle: "Dashboard", dashboardChartTitle: "Entries vs Exits (Monthly)", chartLabelEntries: "Entries", chartLabelExits: "Exits", monthNames: ['Jan','Feb','Mar','Abr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], dashboardLowStockTitle: "Low Stock Products",
-      productsTitle: "Product List", productsNewBtn: "New Product", productsExitBtn: "Product Exit", productsScanBtn: "Locate via PDA", productsSearchLabel: "Search Products", productsSearchPlaceholder: "Search by name or COD...",
+      productsTitle: "Product List", productsNewBtn: "New Product", productsImportBtn: "Import Sheet", productsExitBtn: "Product Exit", productsScanBtn: "Locate via PDA", productsSearchLabel: "Search Products", productsSearchPlaceholder: "Search by name or COD...",
       movementsTitle: "Entries / Exits", movementsSearchLabel: "Search by product name", movementsSearchPlaceholder: "Search by product name...", filterAll: "All", filterEntries: "Entries", filterExits: "Exits", filterApplyBtn: "Filter", filterClearBtn: "Clear",
       reportsTitle: "Reports", reportsMovBtn: "Movements Report", reportsStockBtn: "Current Stock Report",
       qrCodesTitle: "Generate QR Codes", qrCodesPrintBtn: "Print QR Codes",
@@ -536,6 +559,7 @@
       alertAccessDenied: "Access denied: Only administrators and operators can perform this action.", alertSaveSuccess: "Product saved successfully!", alertUpdateSuccess: "Product updated!", alertDeleteSuccess: "Product deleted!", alertExitSuccess: "Exit registered successfully!", alertEntrySuccess: "Entry registered successfully!", alertProductNotFound: "Product not found with the provided code.", alertInsufficientStock: "Insufficient stock.", alertFillAllFields: "Please fill all fields correctly.", alertConfirmDelete: "Do you really want to delete this product?",
       renderEditBtn: "Edit", renderNoProducts: "No products found.", renderLoadingMovements: "Loading movements...", renderErrorMovements: "An error occurred while loading data.", renderNoMovements: "No movements found for the applied filters.", selectProductPlaceholder: "Select a product...",
       userInfoGreeting: "Welcome",
+      importModalTitle: "Mass Order Import", importModalText: "Attach a sheet (XLSX/CSV) with columns: PEDIDO, DESCRIÇÃO PRODUTO/SERVIÇO, QTDE., PO", importModalBtn: "Process and Register", alertImportSuccess: "Import completed successfully!"
     },
     zh: {
       loginTitle: "登录", loginUserLabel: "用户", loginUserPlaceholder: "用户名", loginPassLabel: "密码", loginPassPlaceholder: "用户密码", loginEnterBtn: "进入",
@@ -546,7 +570,7 @@
       collectActiveTask: "当前任务来自：", collectNoTasks: "暂无待执行的采集任务。", collectStartBtn: "开始采集", collectNamePromptTitle: "采集识别", collectNamePromptLabel: "采集员姓名：",
       verifyTitle: "采集校验", verifyNoData: "暂无待校验的采集。", verifyNamePromptTitle: "校验识别", verifyNamePromptLabel: "校验员姓名：", verifyVerifierLabel: "校验员：",
       dashboardTitle: "仪表板", dashboardChartTitle: "月度出入库对比", chartLabelEntries: "入库", chartLabelExits: "出库", monthNames: ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'], dashboardLowStockTitle: "低库存产品",
-      productsTitle: "产品列表", productsNewBtn: "新产品", productsExitBtn: "产品出库", productsScanBtn: "通过PDA定位", productsSearchLabel: "搜索产品", productsSearchPlaceholder: "按名称或COD搜索...",
+      productsTitle: "产品列表", productsNewBtn: "新产品", productsImportBtn: "导入表格", productsExitBtn: "产品出库", productsScanBtn: "通过PDA定位", productsSearchLabel: "搜索产品", productsSearchPlaceholder: "按名称或COD搜索...",
       movementsTitle: "出入库记录", movementsSearchLabel: "按产品名称搜索", movementsSearchPlaceholder: "按产品名称搜索...", filterAll: "全部", filterEntries: "入库", filterExits: "出库", filterApplyBtn: "筛选", filterClearBtn: "清除",
       reportsTitle: "报告", reportsMovBtn: "出入库报告", reportsStockBtn: "当前库存报告",
       qrCodesTitle: "生成二维码", qrCodesPrintBtn: "打印二维码",
@@ -558,6 +582,7 @@
       alertAccessDenied: "访问被拒绝：只有管理员和操作员才能执行此操作。", alertSaveSuccess: "产品保存成功！", alertUpdateSuccess: "产品已更新！", alertDeleteSuccess: "产品已删除！", alertExitSuccess: "出库登记成功！", alertEntrySuccess: "入库登记成功！", alertProductNotFound: "未找到具有所提供代码的产品。", alertInsufficientStock: "库存不足。", alertFillAllFields: "请正确填写所有字段。", alertConfirmDelete: "您确定要删除此产品吗？",
       renderEditBtn: "编辑", renderNoProducts: "未找到产品。", renderLoadingMovements: "正在加载记录...", renderErrorMovements: "加载数据时发生错误。", renderNoMovements: "未找到符合筛选条件的记录。", selectProductPlaceholder: "选择一个产品...",
       userInfoGreeting: "欢迎",
+      importModalTitle: "批量订单导入", importModalText: "上传包含以下列的表格 (XLSX/CSV): PEDIDO, DESCRIÇÃO PRODUTO/SERVIÇO, QTDE., PO", importModalBtn: "处理并注册", alertImportSuccess: "导入成功完成！"
     }
   };
 
@@ -1807,6 +1832,73 @@ for (let R = range.s.r; R <= range.e.r; ++R) {
       alert(getTranslation('alertProductNotFound') + ` Código: ${code}`);
     }
   }
+
+  // =============== IMPORTAÇÃO EM MASSA ===============
+  const importModal = document.getElementById('importModal');
+  const openImportBtn = document.getElementById('openImportModal');
+  const closeImportBtn = document.getElementById('closeImportModal');
+  const importFileInput = document.getElementById('importFileInput');
+  const btnProcessImport = document.getElementById('btnProcessImport');
+
+  openImportBtn.onclick = () => {
+    if (currentUser.role !== 'admin' && currentUser.role !== 'operador') {
+        return alert(getTranslation('alertAccessDenied'));
+    }
+    importModal.classList.remove('hidden');
+    importFileInput.value = '';
+  };
+
+  closeImportBtn.onclick = () => importModal.classList.add('hidden');
+
+  btnProcessImport.onclick = async () => {
+    const file = importFileInput.files[0];
+    if (!file) return alert(getTranslation('alertFillAllFields'));
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+        let successCount = 0;
+
+        for (const row of jsonData) {
+            const pedidoRef = row['PEDIDO'] || 'N/A';
+            const desc = row['DESCRIÇÃO PRODUTO/SERVIÇO'] || row['DESCRIÇÃO'];
+            const qty = parseInt(row['QTDE.'] || row['QTDE'] || 0);
+            const po = row['PO'] || '';
+
+            if (!desc || qty <= 0) continue;
+
+            const existingProductEntry = Object.entries(allProducts).find(([id, p]) => p.nome.toLowerCase() === desc.toLowerCase());
+            
+            if (existingProductEntry) {
+                const [id, prodData] = existingProductEntry;
+                const novaQtd = prodData.quantidade + qty;
+                await update(ref(db, `produtos/${id}`), { quantidade: novaQtd });
+                await push(movRef, { cod: prodData.cod, nome: prodData.nome, tipo: 'entrada', quantidade: qty, data: new Date().toISOString(), responsavel: currentUser.username, setor: `Importação (PO: ${po} | Ped: ${pedidoRef})` });
+            } else {
+                const newCod = await generateUniqueCOD();
+                await push(produtosRef, { nome: desc, cod: newCod, quantidade: qty, imagem: 'https://via.placeholder.com/150', dataCadastro: new Date().toISOString() });
+                await push(movRef, { cod: newCod, nome: desc, tipo: 'entrada', quantidade: qty, data: new Date().toISOString(), responsavel: currentUser.username, setor: `Cadastro via Importação (PO: ${po} | Ped: ${pedidoRef})` });
+            }
+            successCount++;
+        }
+        alert(`${getTranslation('alertImportSuccess')} ${successCount} itens processados.`);
+        importModal.classList.add('hidden');
+    };
+    reader.readAsArrayBuffer(file);
+  };
+
+  document.getElementById('btnDownloadTemplate').onclick = () => {
+      const wb = XLSX.utils.book_new();
+      const wsData = [["PEDIDO", "DESCRIÇÃO PRODUTO/SERVIÇO", "QTDE.", "PO"]];
+      const ws = XLSX.utils.aoa_to_sheet(wsData);
+      XLSX.utils.book_append_sheet(wb, ws, "Modelo");
+      XLSX.writeFile(wb, "modelo_importacao.xlsx");
+  };
 
   // =============== INICIALIZAÇÃO ===============
   function loadAllData() {
