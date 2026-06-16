@@ -1,6 +1,6 @@
 // BD.js
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js';
-import { getDatabase, ref, push, update, onValue, remove, set, get } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-database.js';
+import { getDatabase, ref, push, update, onValue, remove, set, get, query, orderByChild, equalTo } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-database.js';
 
 // Configuração do Firebase
 const firebaseConfig = {
@@ -19,4 +19,4 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
 // Exportar
-export { database, ref, push, update, onValue, remove, set, get };
+export { database, ref, push, update, onValue, remove, set, get, query, orderByChild, equalTo };
