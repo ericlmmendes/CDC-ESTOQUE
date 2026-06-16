@@ -195,8 +195,8 @@
       <section id="direcionamento" class="page-section hidden">
         <h2 class="text-2xl font-bold mb-6" data-translate="dispatchTitle">Direcionar Coleta</h2>
         <div class="bg-white p-6 rounded-xl border mb-6">
-          <h3 class="font-semibold mb-2" data-translate="dispatchSubtitle">Insira a lista de produtos (Região Nome Quantidade Descrição):</h3>
-          <p class="text-xs text-gray-500 mb-4">Exemplo: RDCMG1 PILHA AA COM 8 UNIDADES 3 xxxx</p>
+          <h3 class="font-semibold mb-2" data-translate="dispatchSubtitle">Insira a lista de produtos (Local Code Quantidade):</h3>
+          <p class="text-xs text-gray-500 mb-4">Exemplo: Local "RDCMG1" Code "AAA123" Quantidade "3" Descrição "adicional"</p>
           <textarea id="dispatchTextInput" class="w-full h-48 border border-gray-300 rounded-lg p-4 font-mono text-sm mb-4 focus:ring-blue-500" placeholder="Cole aqui a lista..."></textarea>
           
           <div id="dispatchPreviewArea" class="hidden mb-6">
@@ -242,9 +242,10 @@
                   <p id="collectName" class="font-bold text-gray-800"></p>
                   <p id="collectCod" class="text-xs text-gray-500 mb-2"></p>
                   <p id="collectLocalItem" class="text-sm text-blue-600 font-bold mb-2"></p>
-                  <div class="bg-orange-50 p-2 rounded mb-4">
+                  <div class="bg-orange-50 p-2 rounded mb-2">
                       <p class="text-sm font-semibold text-orange-700">Qtd a Retirar: <span id="collectTargetQty" class="text-lg">0</span></p>
                   </div>
+                  <p id="collectObservation" class="text-xs text-red-600 mb-2 hidden"></p>
                   <div class="flex flex-col gap-2">
                     <button id="btnMarkCollected" class="bg-green-600 text-white py-2 rounded-lg font-bold">COLETADO</button>
                     <button id="btnMarkNotCollected" class="bg-red-600 text-white py-2 rounded-lg font-bold">NÃO COLETADO</button>
@@ -492,23 +493,10 @@
 <script type="module" src="./info.js"></script>
 
 <script type="module">
-  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js';
-  import { getDatabase, ref, push, update, remove, onValue, get, query, orderByChild, equalTo, set } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-database.js';
+  import { database, ref, push, update, remove, onValue, get, query, orderByChild, equalTo, set } from './BD.js';
   import ACCESS_CONFIG from './info.js';
 
-  const firebaseConfig = {
-  apiKey: "AIzaSyCRiN9bG96FJdOslh_nx3Apmwb8VqdXrsU",
-  authDomain: "evocortes-dfa04.firebaseapp.com",
-  databaseURL: "https://evocortes-dfa04-default-rtdb.firebaseio.com",
-  projectId: "evocortes-dfa04",
-  storageBucket: "evocortes-dfa04.firebasestorage.app",
-  messagingSenderId: "431410895933",
-  appId: "1:431410895933:web:cbe3d898e471e183bf5e54",
-  measurementId: "G-KEMS99F9L3"
-};
-
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
+  const db = database;
   const produtosRef = ref(db, 'produtos');
   const movRef = ref(db, 'movimentacoes');
   const tarefasRef = ref(db, 'tarefas_coleta');
@@ -537,7 +525,7 @@
       alertAccessDenied: "Acesso negado: Apenas administradores e operadores podem realizar esta ação.", alertSaveSuccess: "Produto salvo com sucesso!", alertUpdateSuccess: "Produto atualizado!", alertDeleteSuccess: "Produto excluído!", alertExitSuccess: "Saída registrada com sucesso!", alertEntrySuccess: "Entrada registrada com sucesso!", alertProductNotFound: "Produto não encontrado com o código fornecido.", alertInsufficientStock: "Estoque insuficiente.", alertFillAllFields: "Preencha todos os campos corretamente.", alertConfirmDelete: "Deseja realmente excluir este produto?",
       renderEditBtn: "Editar", renderNoProducts: "Nenhum produto encontrado.", renderLoadingMovements: "Carregando movimentações...", renderErrorMovements: "Ocorreu um erro ao carregar os dados.", renderNoMovements: "Nenhuma movimentação encontrada para os filtros aplicados.", selectProductPlaceholder: "Selecione um produto...",
       userInfoGreeting: "Bem-vindo(a)",
-      importModalTitle: "Importar Pedidos em Massa", importModalText: "Anexe uma planilha (XLSX/CSV) com as colunas: PEDIDO, DESCRIÇÃO PRODUTO/SERVIÇO, QTDE., PO", importModalBtn: "Processar e Cadastrar", alertImportSuccess: "Importação concluída com sucesso!"
+      importModalTitle: "Importar Pedidos em Massa", importModalText: "Anexe uma planilha (XLSX/CSV) com as colunas: Code, Description, inbound", importModalBtn: "Processar e Cadastrar", alertImportSuccess: "Importação concluída com sucesso!"
     },
     en: {
       loginTitle: "Login", loginUserLabel: "User", loginUserPlaceholder: "Username", loginPassLabel: "Password", loginPassPlaceholder: "User password", loginEnterBtn: "Enter",
@@ -560,7 +548,7 @@
       alertAccessDenied: "Access denied: Only administrators and operators can perform this action.", alertSaveSuccess: "Product saved successfully!", alertUpdateSuccess: "Product updated!", alertDeleteSuccess: "Product deleted!", alertExitSuccess: "Exit registered successfully!", alertEntrySuccess: "Entry registered successfully!", alertProductNotFound: "Product not found with the provided code.", alertInsufficientStock: "Insufficient stock.", alertFillAllFields: "Please fill all fields correctly.", alertConfirmDelete: "Do you really want to delete this product?",
       renderEditBtn: "Edit", renderNoProducts: "No products found.", renderLoadingMovements: "Loading movements...", renderErrorMovements: "An error occurred while loading data.", renderNoMovements: "No movements found for the applied filters.", selectProductPlaceholder: "Select a product...",
       userInfoGreeting: "Welcome",
-      importModalTitle: "Mass Order Import", importModalText: "Attach a sheet (XLSX/CSV) with columns: PEDIDO, DESCRIÇÃO PRODUTO/SERVIÇO, QTDE., PO", importModalBtn: "Process and Register", alertImportSuccess: "Import completed successfully!"
+      importModalTitle: "Mass Order Import", importModalText: "Attach a sheet (XLSX/CSV) with columns: Code, Description, inbound", importModalBtn: "Process and Register", alertImportSuccess: "Import completed successfully!"
     },
     zh: {
       loginTitle: "登录", loginUserLabel: "用户", loginUserPlaceholder: "用户名", loginPassLabel: "密码", loginPassPlaceholder: "用户密码", loginEnterBtn: "进入",
@@ -583,7 +571,7 @@
       alertAccessDenied: "访问被拒绝：只有管理员和操作员才能执行此操作。", alertSaveSuccess: "产品保存成功！", alertUpdateSuccess: "产品已更新！", alertDeleteSuccess: "产品已删除！", alertExitSuccess: "出库登记成功！", alertEntrySuccess: "入库登记成功！", alertProductNotFound: "未找到具有所提供代码的产品。", alertInsufficientStock: "库存不足。", alertFillAllFields: "请正确填写所有字段。", alertConfirmDelete: "您确定要删除此产品吗？",
       renderEditBtn: "编辑", renderNoProducts: "未找到产品。", renderLoadingMovements: "正在加载记录...", renderErrorMovements: "加载数据时发生错误。", renderNoMovements: "未找到符合筛选条件的记录。", selectProductPlaceholder: "选择一个产品...",
       userInfoGreeting: "欢迎",
-      importModalTitle: "批量订单导入", importModalText: "上传包含以下列的表格 (XLSX/CSV): PEDIDO, DESCRIÇÃO PRODUTO/SERVIÇO, QTDE., PO", importModalBtn: "处理并注册", alertImportSuccess: "导入成功完成！"
+      importModalTitle: "批量订单导入", importModalText: "上传包含以下列的表格 (XLSX/CSV): Code, Description, inbound", importModalBtn: "处理并注册", alertImportSuccess: "导入成功完成！"
     }
   };
 
@@ -939,7 +927,7 @@
           <img src="https://api.qrserver.com/v1/create-qr-code/?size=60x60&data=${p.cod}" class="w-14 h-14">
         </div>
         <h3 class="font-semibold text-gray-800">${p.nome}</h3>
-        <p class="text-xs text-gray-500">COD: ${p.cod}</p>
+        <p class="text-xs text-gray-500">Code: ${p.cod}</p>
         <div class="flex justify-between items-center mt-3">
           <span class="text-2xl font-bold ${p.quantidade < 10 ? 'text-red-600' : 'text-green-600'} ">${p.quantidade}</span>
           <div class="flex gap-2">
@@ -1080,26 +1068,31 @@
 
     lines.forEach(line => {
         const lineLower = line.toLowerCase();
-        let foundProduct = null;
         let qty = 1;
-        
         const parts = line.trim().split(/\s+/);
         const local = parts.length > 0 ? parts[0].toUpperCase() : "GERAL";
+        const code = parts.length > 1 ? parts[1].toUpperCase() : '';
 
-        Object.values(allProducts).forEach(p => {
-            if (lineLower.includes(p.nome.toLowerCase())) {
-                foundProduct = p;
+        for (let i = 2; i < parts.length; i++) {
+            if (/^\d+$/.test(parts[i])) {
+                qty = parseInt(parts[i]);
+                break;
             }
-        });
+        }
 
-        const qtyMatch = line.match(/\s(\d+)\s/);
-        if (qtyMatch) qty = parseInt(qtyMatch[1]);
+        let foundProduct = null;
+        if (code) {
+            foundProduct = Object.values(allProducts).find(p => p.cod.toLowerCase() === code.toLowerCase());
+        }
+        if (!foundProduct) {
+            foundProduct = Object.values(allProducts).find(p => lineLower.includes(p.nome.toLowerCase()));
+        }
 
         if (foundProduct) {
             pendingDispatchList.push({ ...foundProduct, targetQty: qty, local: local });
             const div = document.createElement('div');
             div.className = "text-xs p-2 bg-white border rounded flex justify-between items-center";
-            div.innerHTML = `<span><strong>${foundProduct.nome}</strong> (Qtd: ${qty}) - Local: ${local}</span> <span class="text-green-600 font-bold">Localizado</span>`;
+            div.innerHTML = `<span><strong>Code: ${foundProduct.cod}</strong> | ${foundProduct.nome} | Qtd: ${qty} | Local: ${local}</span> <span class="text-green-600 font-bold">Localizado</span>`;
             previewList.appendChild(div);
         } else {
             const div = document.createElement('div');
@@ -1220,32 +1213,64 @@
       setTimeout(() => document.getElementById('collectPdaInput').focus(), 500);
   }
 
-  document.getElementById('collectPdaInput').addEventListener('keydown', (e) => {
+  const collectPdaInput = document.getElementById('collectPdaInput');
+  let collectScanTimeout = null;
+
+  function processCollectCode(code) {
+    const normalized = code.replace(/\s+/g, '').trim().toLowerCase();
+    const itemInTask = currentTaskItems.find(i => i.cod && i.cod.toLowerCase() === normalized) || currentTaskItems.find(i => (i.nome || '').toLowerCase().includes(normalized));
+    if (itemInTask) {
+      // find product in allProducts to check available qty
+      const productEntry = Object.entries(allProducts).find(([id, p]) => p.cod && p.cod.toLowerCase() === (itemInTask.cod || '').toLowerCase());
+      const available = productEntry ? productEntry[1].quantidade : null;
+      const requested = itemInTask.qtdSolicitada || 1;
+
+      if (available !== null && requested > available) {
+        itemInTask.collectedQtd = available;
+        itemInTask.observacao = `Faltaram ${requested - available} unidades`;
+        document.getElementById('collectObservation').textContent = itemInTask.observacao;
+        document.getElementById('collectObservation').classList.remove('hidden');
+      } else {
+        itemInTask.collectedQtd = requested;
+        itemInTask.observacao = '';
+        document.getElementById('collectObservation').classList.add('hidden');
+      }
+
+      currentActiveScannedItem = itemInTask;
+      document.getElementById('collectImg').src = itemInTask.imagem || '';
+      document.getElementById('collectName').textContent = itemInTask.nome || '';
+      document.getElementById('collectCod').textContent = itemInTask.cod || '';
+      document.getElementById('collectLocalItem').textContent = "Local: " + (itemInTask.local || 'Geral');
+      document.getElementById('collectTargetQty').textContent = itemInTask.collectedQtd || 1;
+      document.getElementById('collectCurrentItem').classList.remove('hidden');
+      navigator.vibrate && navigator.vibrate(100);
+    } else {
+      alert("Este produto não pertence a esta tarefa de coleta!");
+    }
+    collectPdaInput.value = '';
+  }
+
+  collectPdaInput.addEventListener('input', (e) => {
+    clearTimeout(collectScanTimeout);
+    const code = e.target.value.replace(/\s+/g, '').trim();
+    if (code.length > 0) {
+      collectScanTimeout = setTimeout(() => processCollectCode(code), 300);
+    }
+  });
+
+  collectPdaInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
-        e.preventDefault();
-        const code = e.target.value.trim();
-        
-        if (code) {
-          const itemInTask = currentTaskItems.find(i => i.cod === code);
-          if (itemInTask) {
-            currentActiveScannedItem = itemInTask;
-            document.getElementById('collectImg').src = itemInTask.imagem;
-            document.getElementById('collectName').textContent = itemInTask.nome;
-            document.getElementById('collectCod').textContent = itemInTask.cod;
-            document.getElementById('collectLocalItem').textContent = "Local: " + (itemInTask.local || 'Geral');
-            document.getElementById('collectTargetQty').textContent = itemInTask.qtdSolicitada || 1;
-            document.getElementById('collectCurrentItem').classList.remove('hidden');
-            navigator.vibrate && navigator.vibrate(100);
-          } else {
-              alert("Este produto não pertence a esta tarefa de coleta!");
-          }
-          e.target.value = '';
-        }
+      e.preventDefault();
+      clearTimeout(collectScanTimeout);
+      const code = e.target.value.replace(/\s+/g, '').trim();
+      if (code.length > 0) processCollectCode(code);
     }
   });
 
   document.getElementById('btnMarkCollected').onclick = () => {
     if (!currentActiveScannedItem) return;
+    // ensure collectedQty is set
+    currentActiveScannedItem.collectedQtd = currentActiveScannedItem.collectedQtd || currentActiveScannedItem.qtdSolicitada || 1;
     currentActiveScannedItem.status = 'coletado';
     renderCollectedList();
     document.getElementById('collectCurrentItem').classList.add('hidden');
@@ -1256,6 +1281,9 @@
   document.getElementById('btnMarkNotCollected').onclick = () => {
     if (!currentActiveScannedItem) return;
     currentActiveScannedItem.status = 'nao_coletado';
+    // if not collected, set collectedQtd = 0
+    currentActiveScannedItem.collectedQtd = 0;
+    if (!currentActiveScannedItem.observacao) currentActiveScannedItem.observacao = 'Não coletado';
     renderCollectedList();
     document.getElementById('collectCurrentItem').classList.add('hidden');
     currentActiveScannedItem = null;
@@ -1280,10 +1308,11 @@
           <div>
               <p class="font-medium text-sm">${item.nome}</p>
               <p class="text-[10px] uppercase font-bold opacity-70">${statusText} | LOCAL: ${item.local || 'GERAL'}</p>
+              ${item.observacao ? `<p class="text-xs text-red-600">Obs: ${item.observacao}</p>` : ''}
           </div>
         </div>
         <div class="flex items-center gap-4">
-          <span class="text-blue-700 px-3 py-1 rounded-full font-bold">Qtd: ${item.qtdSolicitada || 1}</span>
+          <span class="text-blue-700 px-3 py-1 rounded-full font-bold">Qtd: ${item.collectedQtd != null ? item.collectedQtd : (item.qtdSolicitada || 1)}</span>
         </div>
       `;
       list.appendChild(div);
@@ -1568,19 +1597,20 @@ for (let R = range.s.r; R <= range.e.r; ++R) {
             const productEntry = Object.entries(allProducts).find(([id, p]) => p.cod === item.cod);
             if (productEntry) {
                 const [realId, prodData] = productEntry;
-                const quantidadeRetirada = item.qtdSolicitada || 1;
+                const quantidadeRetirada = (item.collectedQtd != null) ? item.collectedQtd : (item.qtdSolicitada || 1);
                 const novaQuantidade = Math.max(0, prodData.quantidade - quantidadeRetirada);
-                
+
                 await update(ref(db, `produtos/${realId}`), { quantidade: novaQuantidade });
-                
+
                 await push(movRef, {
-                    cod: item.cod,
-                    nome: item.nome,
-                    tipo: 'saida',
-                    quantidade: quantidadeRetirada,
-                    data: new Date().toISOString(),
-                    responsavel: currentVerificationData.coletor,
-                    setor: `Coleta Conferida (Local: ${item.local || 'Geral'})`
+                  cod: item.cod,
+                  nome: item.nome,
+                  tipo: 'saida',
+                  quantidade: quantidadeRetirada,
+                  data: new Date().toISOString(),
+                  responsavel: currentVerificationData.coletor,
+                  setor: `Coleta Conferida (Local: ${item.local || 'Geral'})`,
+                  observacao: item.observacao || ''
                 });
             }
         }
@@ -1764,7 +1794,7 @@ for (let R = range.s.r; R <= range.e.r; ++R) {
       div.innerHTML = `
         <div id="qrcode-${p.cod}" class="inline-block mb-2"></div>
         <p class="text-sm font-bold text-gray-800 text-center">${p.nome}</p>
-        <p class="text-xs text-gray-500 text-center">COD: ${p.cod}</p>
+        <p class="text-xs text-gray-500 text-center">Code: ${p.cod}</p>
       `;
       qrCodeList.appendChild(div);
       new QRCode(document.getElementById(`qrcode-${p.cod}`), { text: p.cod, width: 100, height: 100 });
@@ -1866,24 +1896,30 @@ for (let R = range.s.r; R <= range.e.r; ++R) {
         let successCount = 0;
 
         for (const row of jsonData) {
-            const pedidoRef = row['PEDIDO'] || 'N/A';
-            const desc = row['DESCRIÇÃO PRODUTO/SERVIÇO'] || row['DESCRIÇÃO'];
-            const qty = parseInt(row['QTDE.'] || row['QTDE'] || 0);
+                const code = row['Code'] || row['code'] || row['COD'] || row['cod'] || row['Código'] || row['CÓDIGO'] || '';
+            const desc = row['Description'] || row['description'] || row['DESCRIÇÃO PRODUTO/SERVIÇO'] || row['DESCRIÇÃO'] || row['DESCRICAO'] || row['NOME'] || row['nome'] || '';
+            const qty = parseInt(row['inbound'] || row['INBOUND'] || row['QTDE.'] || row['QTDE'] || 0);
             const po = row['PO'] || '';
 
             if (!desc || qty <= 0) continue;
 
-            const existingProductEntry = Object.entries(allProducts).find(([id, p]) => p.nome.toLowerCase() === desc.toLowerCase());
-            
+            let existingProductEntry = null;
+            if (code) {
+                existingProductEntry = Object.entries(allProducts).find(([id, p]) => p.cod.toLowerCase() === code.toLowerCase());
+            }
+            if (!existingProductEntry) {
+                existingProductEntry = Object.entries(allProducts).find(([id, p]) => p.nome.toLowerCase() === desc.toLowerCase());
+            }
+
             if (existingProductEntry) {
                 const [id, prodData] = existingProductEntry;
                 const novaQtd = prodData.quantidade + qty;
                 await update(ref(db, `produtos/${id}`), { quantidade: novaQtd });
-                await push(movRef, { cod: prodData.cod, nome: prodData.nome, tipo: 'entrada', quantidade: qty, data: new Date().toISOString(), responsavel: currentUser.username, setor: `Importação (PO: ${po} | Ped: ${pedidoRef})` });
+                await push(movRef, { cod: prodData.cod, nome: prodData.nome, tipo: 'entrada', quantidade: qty, data: new Date().toISOString(), responsavel: currentUser.username, setor: `Importação (PO: ${po})` });
             } else {
-                const newCod = await generateUniqueCOD();
+                const newCod = code || await generateUniqueCOD();
                 await push(produtosRef, { nome: desc, cod: newCod, quantidade: qty, imagem: 'https://via.placeholder.com/150', dataCadastro: new Date().toISOString() });
-                await push(movRef, { cod: newCod, nome: desc, tipo: 'entrada', quantidade: qty, data: new Date().toISOString(), responsavel: currentUser.username, setor: `Cadastro via Importação (PO: ${po} | Ped: ${pedidoRef})` });
+                await push(movRef, { cod: newCod, nome: desc, tipo: 'entrada', quantidade: qty, data: new Date().toISOString(), responsavel: currentUser.username, setor: `Cadastro via Importação (PO: ${po})` });
             }
             successCount++;
         }
@@ -1895,7 +1931,7 @@ for (let R = range.s.r; R <= range.e.r; ++R) {
 
   document.getElementById('btnDownloadTemplate').onclick = () => {
       const wb = XLSX.utils.book_new();
-      const wsData = [["PEDIDO", "DESCRIÇÃO PRODUTO/SERVIÇO", "QTDE.", "PO"]];
+      const wsData = [["Code", "Description", "inbound"]];
       const ws = XLSX.utils.aoa_to_sheet(wsData);
       XLSX.utils.book_append_sheet(wb, ws, "Modelo");
       XLSX.writeFile(wb, "modelo_importacao.xlsx");
